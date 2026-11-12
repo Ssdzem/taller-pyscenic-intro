@@ -1,0 +1,3 @@
+# Imagen auxiliar SOLO para QC/anotación (pasos 13–16). No se usa para pySCENIC.
+FROM docker.io/library/python:3.11-slim
+RUN pip install --no-cache-dir celltypist==1.6.3 scanpy==1.10.4 h5py && pip freeze > /pip_freeze.txt

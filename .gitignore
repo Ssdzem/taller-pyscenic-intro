@@ -1,0 +1,56 @@
+# AI agent/tooling state — machine-specific, never tracked.
+.claude/
+.codex/
+.omx/
+
+# -----------------------------------------------------------------------------
+# LISTA BLANCA: se ignora TODO salvo lo que se nombra explícitamente abajo.
+# Así nunca se suben por accidente datos originales, bases cisTarget (.feather),
+# modelos, logs locales ni ambientes.
+# -----------------------------------------------------------------------------
+/*
+!/.gitignore
+!/README.md
+!/LICENSE
+!/notebooks/
+!/data/
+!/results/
+!/figures/
+!/scripts/
+!/docs/
+
+# data/: solo la matriz demo comprimida y los metadatos
+/data/*
+!/data/metadata_demo.csv
+!/data/expression_demo.tsv.gz
+
+# results/: solo las vistas ligeras para clase
+/results/*
+!/results/adjacencies_demo.tsv
+!/results/adjacencies_tf_summary.csv
+!/results/regulons_demo.csv
+!/results/motifs_summary.csv
+!/results/auc_demo.csv
+!/results/auc_median_by_population.csv
+!/results/rss_by_population.csv
+!/results/regulon_sizes.csv
+
+# Por si acaso (redundante con la lista blanca)
+*.feather
+*.loom
+*.h5
+*.h5ad
+*.pkl
+*.tar.gz
+data/original/
+resources/
+test_oficial/
+logs/
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+.venv/
+venv/
+env/
+pyscenic_pkgs/
+datos_taller/

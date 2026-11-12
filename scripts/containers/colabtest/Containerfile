@@ -1,0 +1,4 @@
+# Imagen de prueba "tipo Colab": Python 3.12 limpio + librerías habituales de Colab + ejecutor de notebooks.
+FROM docker.io/library/python:3.12-slim
+RUN pip install --no-cache-dir --root-user-action=ignore pandas matplotlib seaborn networkx nbclient nbformat ipykernel \
+ && pip freeze > /pip_freeze.txt
