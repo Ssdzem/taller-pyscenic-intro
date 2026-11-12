@@ -27,6 +27,8 @@
 
 Los resultados se calcularon previamente en un servidor; en clase **no** se ejecuta el pipeline completo (aunque la sección opcional 4 calcula AUCell en vivo).
 
+**¿Falla Colab o internet?** Descarga el respaldo completo (notebook, datos, resultados y figuras): [`taller-pyscenic-respaldo.zip`](https://github.com/Ssdzem/taller-pyscenic-intro/releases/download/v1.0/taller-pyscenic-respaldo.zip) (5.6 MB).
+
 ## Datos y créditos
 
 - Datos: *10k PBMCs from a Healthy Donor (v3 chemistry)*, **10x Genomics**, bajo licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). **Modificados:** control de calidad, anotación de poblaciones, submuestreo a 900 células, filtrado de genes y análisis con pySCENIC (detalles en [`docs/METODOS.md`](docs/METODOS.md)).
