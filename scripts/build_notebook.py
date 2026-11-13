@@ -7,6 +7,8 @@ import json
 import textwrap
 from pathlib import Path
 
+from recursos_comun import AERTS, ENLACES_DRIVE, ESPEJO, FUNCIONES_DESCARGA
+
 BASE_URL = "https://raw.githubusercontent.com/Ssdzem/taller-pyscenic-intro/main"  # confirmar en el paso 37/39
 OUT = Path(__file__).resolve().parents[1] / "notebooks" / "Taller_pySCENIC_2h.ipynb"
 
@@ -431,67 +433,69 @@ pyscenic ctx adjacencies.tsv \
 
 ### ▶ Córrelo tú (≈ 1 min de descarga + 4 min de cálculo)
 
-Para ahorrar tiempo usamos **una sola base** (−500/+100 pb) con **tus** asociaciones de la sección 1. Primero hay que conseguir la base (≈ 313 MB) y la tabla de motivos (≈ 99 MB). Hay dos maneras:
+Para ahorrar tiempo usamos **una sola base** (−500/+100 pb) con **tus** asociaciones de la sección 1. Primero hay que conseguir la base (≈ 313 MB) y la tabla de motivos (≈ 99 MB).
 
-- **Opción 1 (por defecto): descarga directa** desde los servidores de aertslab. La descarga la hace Colab en la nube de Google, así que **no pasa por el wifi del salón**.
-- **Opción 2: Google Drive**, si el instructor compartió una carpeta con los dos archivos (o si la descarga directa falla):
-  1. Abre el enlace de la carpeta, clic derecho → *Organizar* → *Agregar acceso directo* → *Mi unidad*.
-  2. Escribe su ruta en `RUTA_DRIVE`, por ejemplo `"/content/drive/MyDrive/taller_pyscenic_recursos"`.
-  3. Ejecuta la celda. Colab te pedirá permiso para ver tu Drive.
+- **Opción 1 (automática):** la celda prueba, en orden, la **copia en Drive del instructor** (los enlaces ya vienen en la celda), el **servidor de aertslab** y su **espejo**, y se queda con la primera que funcione. Cada archivo se comprueba con su SHA1. La descarga la hace Colab en la nube de Google, así que **no pasa por el wifi del salón**.
+- **Opción 2 (manual, si todo lo anterior falla):** si tienes los dos archivos en tu propio Drive:
+  1. Escribe la ruta de la carpeta en `RUTA_DRIVE`, por ejemplo `"/content/drive/MyDrive/taller_pyscenic_recursos"`.
+  2. Ejecuta la celda. Colab te pedirá permiso para ver tu Drive.
 """)
 
 code(r'''
 # ▶ Consigue la base de ranking y la tabla de motivos (≈ 412 MB)
 import hashlib
-RUTA_DRIVE = ""   # ✏️ Opción 2: ruta a la carpeta compartida en tu Drive (déjala vacía para descargar)
+RUTA_DRIVE = ""   # ✏️ Opción 2: ruta a una carpeta de TU Drive con los dos archivos (déjala vacía)
 
-AERTS = "https://resources.aertslab.org/cistarget"
-RECURSOS = {   # archivo -> (carpeta en aertslab, SHA1 para comprobar que llegó completo)
-    "hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather":
-        (f"{AERTS}/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based",
-         "d9d4e927b80b2b35344aec0a9fc0a82ae9d76759"),
-    "motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl":
-        (f"{AERTS}/motif2tf", "8cba044ef45b389f4b85237931531906b3046182"),
+# archivo -> (subcarpeta en aertslab, SHA1 para comprobar que llegó completo, enlace de Drive del instructor)
+RECURSOS = {
+    "hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather": (
+        "databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based",
+        "d9d4e927b80b2b35344aec0a9fc0a82ae9d76759",
+        "@@D500@@"),
+    "motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl": (
+        "motif2tf",
+        "8cba044ef45b389f4b85237931531906b3046182",
+        "@@DTBL@@"),
 }
+SERVIDORES = ["@@AERTS@@", "@@ESPEJO@@"]   # aertslab y su espejo
 
-def sha1(ruta):
-    h = hashlib.sha1()
-    with open(ruta, "rb") as f:
-        for bloque in iter(lambda: f.read(1 << 20), b""):
-            h.update(bloque)
-    return h.hexdigest()
+@@FUNCIONES@@
 
 def conseguir(archivo):
-    carpeta, esperado = RECURSOS[archivo]
+    carpeta, esperado, enlace = RECURSOS[archivo]
     destino = os.path.join("recursos", archivo)
     os.makedirs("recursos", exist_ok=True)
     if os.path.exists(destino) and sha1(destino) == esperado:
-        return destino
+        return destino, "ya estaba"
+    if os.environ.get("TALLER_RECURSOS"):              # solo para pruebas del instructor
+        shutil.copy(os.path.join(os.environ["TALLER_RECURSOS"], archivo), destino)
+        return destino, "copia local"
     if RUTA_DRIVE:
         if not os.path.exists("/content/drive"):
             from google.colab import drive
             drive.mount("/content/drive")
         shutil.copy(os.path.join(RUTA_DRIVE, archivo), destino)
-    elif os.environ.get("TALLER_RECURSOS"):            # solo para pruebas del instructor
-        shutil.copy(os.path.join(os.environ["TALLER_RECURSOS"], archivo), destino)
-    else:
-        urllib.request.urlretrieve(f"{carpeta}/{archivo}", destino)
-    if sha1(destino) != esperado:
-        os.remove(destino)
-        raise RuntimeError(f"{archivo} llegó incompleto o dañado; vuelve a ejecutar la celda")
-    return destino
+        if sha1(destino) != esperado:
+            os.remove(destino)
+            raise RuntimeError(f"{archivo} de tu Drive está incompleto o dañado")
+        return destino, "tu Drive"
+    fuente = bajar(destino, [f"{s}/{carpeta}/{archivo}" for s in SERVIDORES], enlace, esperado)
+    return destino, fuente
 
 try:
     for archivo in RECURSOS:
         t0 = time.time()
-        ruta = conseguir(archivo)
-        print(f"✅ {archivo}  ({os.path.getsize(ruta) / 1e6:.0f} MB, {time.time() - t0:.0f} s)")
+        ruta, fuente = conseguir(archivo)
+        print(f"✅ {archivo}  ({os.path.getsize(ruta) / 1e6:.0f} MB, {time.time() - t0:.0f} s, desde: {fuente})")
     RECURSOS_LISTOS = True
 except Exception as e:
     RECURSOS_LISTOS = False
     print(f"⚠️ No se pudieron conseguir los recursos: {e}")
-    print("   Prueba la Opción 2 (Drive). Si tampoco funciona, no pasa nada: sigue con los regulones del servidor.")
-''')
+    print("   Avisa al instructor. No pasa nada: puedes seguir con los regulones del servidor.")
+'''.replace("@@FUNCIONES@@", FUNCIONES_DESCARGA)
+     .replace("@@AERTS@@", AERTS).replace("@@ESPEJO@@", ESPEJO)
+     .replace("@@D500@@", ENLACES_DRIVE["hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"])
+     .replace("@@DTBL@@", ENLACES_DRIVE["motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl"]))
 
 code(r'''
 %%time

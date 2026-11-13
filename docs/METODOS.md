@@ -44,6 +44,7 @@ Verificación (`scripts/16_check_demo.py`, con el lector del CLI de pySCENIC): I
   - `motif2tf/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl`
   - `databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather`
   - `databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather`
+  - En los notebooks, cada archivo se busca en orden en una copia en el Drive del instructor (enlaces en `scripts/recursos_drive.json`), en resources.aertslab.org y en su espejo resources-mirror.aertslab.org; siempre se comprueba el SHA1. La copia existe porque el servidor de aertslab se cayó el 2026-10-26 y otra vez el 2026-11-13 (certificado de otro dominio y HTTP 404; el espejo está en el mismo servidor). Ver aertslab/pySCENIC#641, #644, #645.
 - **Comandos** (`scripts/run_pbmc_pipeline.sh`; opciones no mostradas = valores por defecto):
 
 ```bash

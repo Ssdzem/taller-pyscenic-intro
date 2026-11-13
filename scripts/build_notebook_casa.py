@@ -9,6 +9,8 @@ import json
 import textwrap
 from pathlib import Path
 
+from recursos_comun import AERTS, ENLACES_DRIVE, ESPEJO, FUNCIONES_DESCARGA
+
 BASE_URL = "https://raw.githubusercontent.com/Ssdzem/taller-pyscenic-intro/main"
 COLAB_URL = BASE_URL.replace("https://raw.githubusercontent.com/", "https://colab.research.google.com/github/").replace(
     "/main", "/blob/main") + "/notebooks/Pipeline_completo_casa.ipynb"
@@ -62,6 +64,9 @@ md(r"""
 ## 0 · Preparación
 """)
 
+D_TFS, D_TBL = ENLACES_DRIVE['allTFs_hg38.txt'], ENLACES_DRIVE['motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl']
+D_10K = ENLACES_DRIVE['hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather']
+D_500 = ENLACES_DRIVE['hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather']
 code(rf'''
 import hashlib, os, re, shutil, subprocess, sys, tarfile, time, urllib.request
 import numpy as np
@@ -71,7 +76,7 @@ import seaborn as sns
 
 assert MATRIZ in ("demo", "completa"), 'MATRIZ debe ser "demo" o "completa"'
 BASE_URL = "{BASE_URL}"
-AERTS = "https://resources.aertslab.org/cistarget"
+SERVIDORES = ["{AERTS}", "{ESPEJO}"]   # aertslab y su espejo
 DIEZX = "https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_10k_v3"
 NUCLEOS = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else os.cpu_count()   # núcleos asignados a esta sesión
 
@@ -88,40 +93,38 @@ RAM_GB = memoria_gb()
 os.makedirs("recursos", exist_ok=True)
 os.makedirs("resultados", exist_ok=True)
 
-# archivo -> (URL, SHA1 esperado o None, variable de entorno para pruebas del instructor)
+# archivo -> (URLs a probar en orden, SHA1 esperado o None, variable de entorno para pruebas del instructor, enlace de Drive)
+def de_aertslab(ruta):
+    return [f"{{s}}/{{ruta}}" for s in SERVIDORES]
 RECURSOS = {{
-    "allTFs_hg38.txt": (f"{{AERTS}}/tf_lists/allTFs_hg38.txt", "b58256aab395504ff932d563528355343e234dcd", "TALLER_RECURSOS"),
-    "motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl": (f"{{AERTS}}/motif2tf/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl",
-        "8cba044ef45b389f4b85237931531906b3046182", "TALLER_RECURSOS"),
+    "allTFs_hg38.txt": (de_aertslab("tf_lists/allTFs_hg38.txt"),
+        "b58256aab395504ff932d563528355343e234dcd", "TALLER_RECURSOS", "{D_TFS}"),
+    "motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl": (de_aertslab("motif2tf/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl"),
+        "8cba044ef45b389f4b85237931531906b3046182", "TALLER_RECURSOS", "{D_TBL}"),
     "hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather": (
-        f"{{AERTS}}/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather",
-        "60fe44626b5752d31bac611af6e813b1f53fa9be", "TALLER_RECURSOS"),
+        de_aertslab("databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"),
+        "60fe44626b5752d31bac611af6e813b1f53fa9be", "TALLER_RECURSOS", "{D_10K}"),
     "hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather": (
-        f"{{AERTS}}/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather",
-        "d9d4e927b80b2b35344aec0a9fc0a82ae9d76759", "TALLER_RECURSOS"),
-    "expression_demo.tsv.gz": (f"{{BASE_URL}}/data/expression_demo.tsv.gz", None, "TALLER_LOCAL"),
-    "metadata_demo.csv": (f"{{BASE_URL}}/data/metadata_demo.csv", None, "TALLER_LOCAL"),
-    "regulons_demo.csv": (f"{{BASE_URL}}/results/regulons_demo.csv", None, "TALLER_LOCAL"),
-    "auc_demo.csv": (f"{{BASE_URL}}/results/auc_demo.csv", None, "TALLER_LOCAL"),
-    "pbmc_10k_v3_filtered_feature_bc_matrix.h5": (f"{{DIEZX}}/pbmc_10k_v3_filtered_feature_bc_matrix.h5",
-        "ed9aa3361cb5bed4032e894b4d2f9311481d7919", "TALLER_DATOS_10X"),
-    "pbmc_10k_v3_analysis.tar.gz": (f"{{DIEZX}}/pbmc_10k_v3_analysis.tar.gz",
-        "d36f5ee97b25b61c9f7b144b7bce2a0d60fcb5eb", "TALLER_DATOS_10X"),
+        de_aertslab("databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"),
+        "d9d4e927b80b2b35344aec0a9fc0a82ae9d76759", "TALLER_RECURSOS", "{D_500}"),
+    "expression_demo.tsv.gz": ([f"{{BASE_URL}}/data/expression_demo.tsv.gz"], None, "TALLER_LOCAL", ""),
+    "metadata_demo.csv": ([f"{{BASE_URL}}/data/metadata_demo.csv"], None, "TALLER_LOCAL", ""),
+    "regulons_demo.csv": ([f"{{BASE_URL}}/results/regulons_demo.csv"], None, "TALLER_LOCAL", ""),
+    "auc_demo.csv": ([f"{{BASE_URL}}/results/auc_demo.csv"], None, "TALLER_LOCAL", ""),
+    "pbmc_10k_v3_filtered_feature_bc_matrix.h5": ([f"{{DIEZX}}/pbmc_10k_v3_filtered_feature_bc_matrix.h5"],
+        "ed9aa3361cb5bed4032e894b4d2f9311481d7919", "TALLER_DATOS_10X", ""),
+    "pbmc_10k_v3_analysis.tar.gz": ([f"{{DIEZX}}/pbmc_10k_v3_analysis.tar.gz"],
+        "d36f5ee97b25b61c9f7b144b7bce2a0d60fcb5eb", "TALLER_DATOS_10X", ""),
 }}
 # en la copia local del repositorio (solo pruebas) los archivos están en subcarpetas
 SUBCARPETA_LOCAL = {{"expression_demo.tsv.gz": "data", "metadata_demo.csv": "data",
                     "regulons_demo.csv": "results", "auc_demo.csv": "results"}}
 
-def sha1(ruta):
-    h = hashlib.sha1()
-    with open(ruta, "rb") as f:
-        for bloque in iter(lambda: f.read(1 << 20), b""):
-            h.update(bloque)
-    return h.hexdigest()
+{FUNCIONES_DESCARGA}
 
 def conseguir(archivo):
-    """Descarga (o copia de Drive) un archivo a recursos/, una sola vez, y comprueba su SHA1."""
-    url, esperado, variable = RECURSOS[archivo]
+    """Consigue un archivo en recursos/, una sola vez, comprobando su SHA1 (Drive del instructor → aertslab → espejo)."""
+    urls, esperado, variable, enlace = RECURSOS[archivo]
     destino = os.path.join("recursos", archivo)
     if os.path.exists(destino) and (esperado is None or sha1(destino) == esperado):
         return destino
@@ -129,24 +132,22 @@ def conseguir(archivo):
     local = os.environ.get(variable)                          # solo para pruebas del instructor
     if local:
         shutil.copy(os.path.join(local, SUBCARPETA_LOCAL.get(archivo, ""), archivo), destino)
+        fuente = "copia local"
     elif RUTA_DRIVE_RECURSOS and archivo.startswith(("hg38_", "motifs-", "allTFs")):
         if not os.path.exists("/content/drive"):
             from google.colab import drive
             drive.mount("/content/drive")
         shutil.copy(os.path.join(RUTA_DRIVE_RECURSOS, archivo), destino)
+        fuente = "tu Drive"
+        if esperado is not None and sha1(destino) != esperado:
+            os.remove(destino)
+            raise RuntimeError(f"{{archivo}} de tu Drive está incompleto o dañado (SHA1 distinto).")
     else:
-        for intento in range(3):
-            try:
-                urllib.request.urlretrieve(url, destino)
-                break
-            except Exception as e:
-                if intento == 2:
-                    raise RuntimeError(f"No se pudo descargar {{archivo}}: {{e}}")
-                time.sleep(5)
-    if esperado is not None and sha1(destino) != esperado:
-        os.remove(destino)
-        raise RuntimeError(f"{{archivo}} llegó incompleto o dañado (SHA1 distinto). Vuelve a ejecutar la celda.")
-    print(f"  ✅ {{archivo}} ({{os.path.getsize(destino) / 1e6:.0f}} MB, {{time.time() - t0:.0f}} s)")
+        try:
+            fuente = bajar(destino, urls, enlace, esperado)
+        except RuntimeError as e:
+            raise RuntimeError(f"No se pudo conseguir {{archivo}}: {{e}}") from None
+    print(f"  ✅ {{archivo}} ({{os.path.getsize(destino) / 1e6:.0f}} MB, {{time.time() - t0:.0f}} s, desde: {{fuente}})")
     return destino
 
 def guardar(*archivos):
@@ -266,10 +267,9 @@ md(r"""
 
 La lista de TF, la tabla motivo → TF y las **dos** bases de ranking. Cada archivo se comprueba con su SHA1.
 
-**Si la descarga falla**, puede ser que el servidor de aertslab esté caído (a veces pasa). Tienes dos salidas:
+Cada archivo se busca en orden en la **copia en Drive del instructor**, el **servidor de aertslab** y su **espejo**. El servidor de aertslab a veces se cae (pasó en octubre y noviembre de 2026), por eso existe la copia.
 
-- esperar y volver a ejecutar la celda;
-- copiar los archivos a una carpeta de tu Drive y escribir su ruta en `RUTA_DRIVE_RECURSOS`.
+**Si todo falla:** espera y vuelve a ejecutar la celda, o copia los archivos a una carpeta de tu Drive y escribe su ruta en `RUTA_DRIVE_RECURSOS`.
 """)
 
 code(r'''
