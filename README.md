@@ -27,7 +27,7 @@
 
 Los resultados que se interpretan se calcularon previamente en un servidor. En clase, además, **cada alumno corre los tres comandos de pySCENIC** (`grn`, `ctx`, `aucell`) en una versión reducida que cabe en Colab, con una explicación de cada opción. El pipeline completo está en `Pipeline_completo_casa.ipynb`.
 
-**¿Falla Colab o internet?** Descarga el respaldo completo (notebook, datos, resultados y figuras): [`taller-pyscenic-respaldo.zip`](https://github.com/Ssdzem/taller-pyscenic-intro/releases/download/v1.0/taller-pyscenic-respaldo.zip) (5.6 MB).
+**¿Falla Colab o internet?** Descarga el respaldo completo (notebook, datos, resultados y figuras): [`taller-pyscenic-respaldo.zip`](https://github.com/Ssdzem/taller-pyscenic-intro/releases/latest/download/taller-pyscenic-respaldo.zip) (5.6 MB).
 
 ## Datos y créditos
 
