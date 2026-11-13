@@ -1,11 +1,11 @@
 """Ejecuta el notebook de principio a fin como "Run all" (paso 36/42, ensayo local).
 Uso (en localhost/taller-colabtest:py312):  python test_notebook.py NOTEBOOK SALIDA.ipynb
 Lee los datos desde TALLER_LOCAL (copia local del repo) si está definido; si no, desde GitHub."""
-import sys, time, json, nbformat
+import os, sys, time, json, nbformat
 from nbclient import NotebookClient
 
 nb = nbformat.read(sys.argv[1], as_version=4)
-client = NotebookClient(nb, timeout=900, kernel_name="python3", allow_errors=True)
+client = NotebookClient(nb, timeout=int(os.environ.get("NB_TIMEOUT", 900)), kernel_name="python3", allow_errors=True)
 t0 = time.time()
 with client.setup_kernel():
     for i, cell in enumerate(nb.cells):

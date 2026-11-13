@@ -73,7 +73,32 @@ La tabla completa de adyacencias (75 MB), el `regulons.csv` en formato CLI y las
 ## 6. AUCell en el notebook
 
 - **Reimplementación en numpy/pandas** (sección 4.1 del notebook): réplica de `pyscenic.aucell` 0.12.1 con las opciones del CLI (sin pesos, `auc_threshold = 0.05`, corte de ranking `round(0.05·n) − 1`, desempate aleatorio con semilla 2026, regla de ≥80 % de genes presentes). Diferencia máxima con `auc_demo.csv`: 1e-16 (`scripts/35_validate_numpy_aucell.py`).
-- **pySCENIC por pip** (sección 4.2): `pyscenic==0.12.1` + `setuptools<81` (sin este último, `ctxcore` falla al importar `pkg_resources`). Probado en Python 3.11–3.13 (`scripts/35_test_pip_pyscenic.sh`); resultado idéntico.
+- La reimplementación queda en la sección opcional 4 del notebook. En la sección 3 se corre además `pyscenic aucell` real con los 272 regulones exportados a `.gmt`, y el resultado debe ser idéntico a `auc_demo.csv`.
+
+## 6b. Correr el CLI de pySCENIC en Colab (secciones ▶ del notebook)
+
+pySCENIC 0.12.1 (2022) no funciona tal cual con las librerías actuales de Colab (Python 3.12, numpy 2, pandas 3, dask 2026). Se instala aislado con `pip install --target pyscenic_pkgs "pyscenic==0.12.1" "setuptools<81" "pandas<3"` y se aplican estos arreglos:
+
+| Problema | Síntoma | Arreglo |
+|---|---|---|
+| `ctxcore` importa `pkg_resources` | `ModuleNotFoundError: pkg_resources` | `setuptools<81` |
+| numpy 2 eliminó `np.object` y `np.float` (`pyscenic/transform.py` y `rss.py`) | `AttributeError: module 'numpy' has no attribute 'object'`; el CLI no arranca | reemplazar por `object`/`float` (4 líneas) |
+| pandas 3 cambió `groupby().apply` (`pyscenic/utils.py:244`) | `KeyError: 'target'` en `ctx` | `pandas<3` |
+| arboreto con `dask` moderno | `TypeError: Must supply at least one delayed object` en `pyscenic grn` | usar `arboreto_with_multiprocessing.py` (incluido en pySCENIC, mismos argumentos) |
+| `numpy<2` como alternativa | `ImportError: pyarrow requires NumPy 2.0 or newer` | descartado |
+
+Tiempos medidos con 2 CPU y 12 GB, como Colab gratuito (`scripts/51_test_cli_colab.sh`, `logs/51_cli_*_patch2.log`):
+
+| Paso | Matriz reducida (900 × 2,829: 2,000 genes más variables + 1,018 TF) | Matriz demo (900 × 10,120) |
+|---|---|---|
+| Instalación | 24 s | 26 s |
+| `grn` | 121 s | 982 s |
+| `ctx`, 1 base (−500/+100 pb) | 229 s → 148 regulones | 241 s → 191 regulones |
+| `ctx`, 2 bases | 360 s → 216 regulones | 455 s → 255 regulones (servidor: 272) |
+| `aucell` | 7 s | 6 s |
+| RAM máxima | 5.7 GB | 5.5 GB |
+
+En clase se usa la matriz reducida con 1 base. Prueba del notebook para casa con la matriz completa (10,280 × 10,165, 5 procesos, 12 GB): `grn` 81 min, `ctx` 6 min, `aucell` 15 s → 237 regulones (`logs/52_casa_completa_6cpu.log`). Matriz demo con 2 núcleos: `grn` 943 s, `ctx` 517 s → 255 regulones (`logs/52_casa_demo_2cpu.log`). `Pipeline_completo_casa.ipynb` corre la matriz demo, o el dataset entero de 10x tras el mismo QC, con las 2 bases. Las diferencias frente a los 272 regulones del servidor se deben al número de genes y bases, al componente aleatorio de GRNBoost2 y al cambio de `pyscenic grn` (dask) por `arboreto_with_multiprocessing.py`. Se usan como tema de discusión sobre la robustez de los regulones.
 
 ## 7. Reproducir
 

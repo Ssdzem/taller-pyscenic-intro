@@ -23,6 +23,8 @@ def code(src):
 
 
 # =============================================================================
+COLAB_CASA = BASE_URL.replace("https://raw.githubusercontent.com/", "https://colab.research.google.com/github/").replace(
+    "/main", "/blob/main") + "/notebooks/Pipeline_completo_casa.ipynb"
 COLAB_URL = BASE_URL.replace("https://raw.githubusercontent.com/", "https://colab.research.google.com/github/").replace(
     "/main", "/blob/main") + "/notebooks/Taller_pySCENIC_2h.ipynb"
 md(rf"""
@@ -33,6 +35,11 @@ md(rf"""
 **Duración:** 2 horas · **Requisitos:** cuenta de Google + navegador · **No necesitas instalar nada.**
 
 👉 **Cómo usar este notebook:** ejecuta las celdas **en orden** con el botón ▶ (o `Shift + Enter`). Las celdas marcadas con ✏️ tienen una variable que puedes cambiar.
+
+En cada ejercicio encontrarás dos tipos de bloque nuevos:
+
+- 🖥️ **El comando:** el comando real de pySCENIC y una tabla que explica cada opción (*flag*), como en la documentación oficial.
+- ▶ **Córrelo tú:** ejecutas ese comando aquí mismo, en una versión reducida que cabe en Colab.
 
 ---
 
@@ -64,18 +71,19 @@ md(rf"""
 ## Los datos
 
 - **Origen:** *10k PBMCs from a Healthy Donor (v3)*, 10x Genomics (dataset público). Un solo donante sano.
-- **Ya calculado por el instructor** con pySCENIC 0.12.1 (en un servidor, ~7 min): **900 células** (300 por población) × **10,120 genes**.
+- **Ya calculado por el instructor** con pySCENIC 0.12.1 (en un servidor con 20 núcleos, ~7 min): **900 células** (300 por población) × **10,120 genes**. Los ejercicios interpretan **esos resultados**.
+- **Además, tú correrás los tres comandos** en una versión reducida (Colab gratuito tiene solo 2 núcleos) y compararás tu resultado con el del servidor.
 - **Etiquetas de población:** el dataset no trae tipos celulares; las asignamos con **genes marcadores canónicos** y las verificamos con **CellTypist**. Solo usamos células donde ambos métodos coinciden.
 
 ## Mapa del notebook
 
 | Sección | Qué harás | Minutos aprox. |
 |---|---|---|
-| 0 · Preparación | Descargar datos y ver las poblaciones | 15–25 |
-| 1 · GRNBoost2 | Explorar asociaciones TF–gen | 25–45 |
-| 2 · cisTarget | Ver cómo se podan los regulones | 45–65 |
-| 3 · AUCell | Comparar actividad entre poblaciones | 65–90 |
-| 4 · *(Opcional)* AUCell en vivo | Calcular AUCell tú mismo | si da tiempo |
+| 0 · Preparación | Descargar datos, instalar pySCENIC y ver las poblaciones | 15–25 |
+| 1 · GRNBoost2 | Correr `grn` (≈ 2 min) y explorar asociaciones TF–gen | 25–45 |
+| 2 · cisTarget | Correr `ctx` (≈ 5 min) y ver cómo se podan los regulones | 45–65 |
+| 3 · AUCell | Correr `aucell` (≈ 10 s) y comparar actividad entre poblaciones | 65–90 |
+| 4 · *(Opcional)* AUCell por dentro | Programar AUCell desde cero | si da tiempo |
 | 5 · Interpretación en parejas | Proponer una hipótesis | 90–110 |
 | 6 · Limitaciones y recursos | Qué se puede y qué no se puede concluir | 110–120 |
 
@@ -178,6 +186,56 @@ assert set(meta.population) == set(ORDEN)
 print("✅ Sección 0 lista:", meta.shape[0], "células,", meta.population.nunique(), "poblaciones.")
 ''')
 
+md(r"""
+### Instalar pySCENIC (≈ 30 s)
+
+En los ejercicios vas a **correr los comandos reales de pySCENIC**. Esta celda lo instala en una carpeta aparte (`pyscenic_pkgs`) para no alterar el resto de Colab. Ejecútala y sigue leyendo mientras termina.
+
+> 🧩 **Detalle técnico:** pySCENIC 0.12.1 es de 2022 y choca con librerías más nuevas que trae Colab. La celda aplica tres arreglos:
+> - instala `setuptools<81` (sin él falla `import ctxcore`);
+> - instala `pandas<3` (pandas 3 rompe `ctx`);
+> - cambia `np.object`/`np.float` por `object`/`float` en dos archivos, porque numpy 2 eliminó esos nombres.
+>
+> Si la instalación falla, no pasa nada: todos los ejercicios funcionan con los resultados del servidor.
+""")
+
+code(r'''
+# ▶ Instala pySCENIC 0.12.1 (≈ 30 s)
+import re, subprocess
+PKGS = os.path.abspath("pyscenic_pkgs")
+
+def instalar_pyscenic():
+    if not os.path.exists(os.path.join(PKGS, "pyscenic")):
+        subprocess.run([sys.executable, "-m", "pip", "install", "-q", "--target", PKGS,
+                        "pyscenic==0.12.1", "setuptools<81", "pandas<3"],
+                       check=True, timeout=600, capture_output=True, text=True)
+    for archivo, viejo, nuevo in [("pyscenic/transform.py", "np.object,", "object,"),
+                                  ("pyscenic/rss.py", "dtype=np.float)", "dtype=float)")]:
+        ruta = os.path.join(PKGS, archivo)
+        with open(ruta) as f:
+            texto = f.read()
+        with open(ruta, "w") as f:
+            f.write(texto.replace(viejo, nuevo))
+    # Los comandos "!" de las celdas siguientes usarán esta instalación
+    os.environ["PYTHONPATH"] = PKGS
+    os.environ["PYTHONWARNINGS"] = "ignore"   # oculta avisos internos de librerías viejas
+    os.environ["PATH"] = os.path.join(PKGS, "bin") + os.pathsep + os.environ["PATH"]
+    subprocess.run(["pyscenic", "--help"], check=True, timeout=300, capture_output=True, text=True)
+
+t0 = time.time()
+try:
+    instalar_pyscenic()
+    PYSCENIC_LISTO = True
+    print(f"✅ pySCENIC 0.12.1 listo en {time.time() - t0:.0f} s. Comandos: pyscenic, arboreto_with_multiprocessing.py")
+except Exception as e:
+    PYSCENIC_LISTO = False
+    detalle = re.sub(r"\x1b\[[0-9;]*m", "", str(getattr(e, "stderr", None) or e)).strip().splitlines()
+    print("⚠️ No se pudo instalar pySCENIC. No pasa nada: usarás los resultados del servidor.")
+    print("   Detalle:", detalle[-1] if detalle else type(e).__name__)
+NUCLEOS = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else os.cpu_count()   # núcleos asignados a esta sesión
+print("Núcleos de CPU disponibles:", NUCLEOS)
+''')
+
 # =============================================================================
 md(r"""
 ---
@@ -188,7 +246,81 @@ md(r"""
 - Importancia alta ⇒ el TF y el gen están **fuertemente asociados** (coexpresados) en estas células.
 - No dice **dirección** (¿quién regula a quién?) ni **causalidad**. Es una medida **relativa**, no un p-valor.
 
-La tabla completa tiene **2.3 millones** de asociaciones; para el taller incluimos **todas las asociaciones de 13 TF** seleccionados.
+La tabla completa del servidor tiene **2.3 millones** de asociaciones (75 MB): demasiado para descargarla en clase. Para explorarla incluimos **todas las asociaciones, sin filtrar, de 13 TF** elegidos porque cuentan la historia:
+
+- reguladores clásicos de cada población: SPI1, CEBPB, CEBPA e IRF8 (monocitos); PAX5, EBF1, SPIB y POU2AF1 (células B); TBX21, EOMES, RUNX3 y PRDM1 (NK);
+- un caso trampa: RPS4X.
+
+Los **272 regulones** y la **matriz AUCell** sí van completos.
+
+### 🖥️ El comando: `pyscenic grn`
+
+Así lo corrió el instructor en el servidor:
+
+```bash
+pyscenic grn expression_demo.tsv allTFs_hg38.txt -o adjacencies.tsv --num_workers 20 --seed 2026
+```
+
+| Parte | Qué es | Valor usado | Por qué |
+|---|---|---|---|
+| `expression_demo.tsv` | 1.er argumento: matriz de expresión. CSV/TSV con **filas = células y columnas = genes**, o un archivo `.loom` | 900 células × 10,120 genes, conteos crudos | pySCENIC usa expresión sin escalar por gen |
+| `allTFs_hg38.txt` | 2.º argumento: lista de TF candidatos, uno por línea | 1,892 TF humanos de [aertslab](https://resources.aertslab.org/cistarget/tf_lists/); 1,018 están en la matriz | Solo los genes de esta lista pueden actuar como "reguladores" |
+| `-o`, `--output` | Archivo de salida: tabla `TF`, `target`, `importance` | `adjacencies.tsv` | — |
+| `--num_workers` | Núcleos de CPU que trabajan en paralelo | 20 en el servidor; 2 en Colab | Más núcleos = más rápido |
+| `--seed` | Semilla aleatoria de los árboles de decisión | 2026 | Para poder repetir el resultado; sin semilla, cada corrida da algo distinto |
+| `-m`, `--method` | Algoritmo: `grnboost2` (por defecto) o `genie3` | `grnboost2` | Mucho más rápido que GENIE3, con resultados parecidos |
+| `-t`, `--transpose` | Úsalo si tu tabla tiene **genes en filas** | no | La nuestra ya tiene células en filas |
+| `--sparse` | Carga la matriz como dispersa para ahorrar memoria | no | Nuestra matriz es pequeña |
+
+> 🧩 **Detalle técnico:** con versiones recientes de la librería `dask`, `pyscenic grn` falla con *"Must supply at least one delayed object"*. pySCENIC incluye el script `arboreto_with_multiprocessing.py`, que hace **lo mismo con los mismos argumentos** sin usar `dask`. Es el que usaremos en Colab.
+
+### ▶ Córrelo tú (≈ 2 min)
+
+Colab gratuito tiene **2 núcleos**, frente a los 20 del servidor. Con la matriz completa GRNBoost2 tardaría ~16 min, así que usamos una **versión reducida**: las mismas 900 células, pero solo los **2,000 genes más variables** más los **1,018 TF** (2,829 genes en total).
+
+La primera celda prepara los archivos y la segunda corre el comando. **Mientras corre, repasen la tabla de arriba.**
+""")
+
+code(r'''
+# ▶ Prepara los archivos de entrada del comando
+expr = cargar("expresion")
+tfs = cargar("resumen_tf").index.tolist()     # los 1,018 TF de allTFs_hg38.txt presentes en la matriz
+lognorm = np.log1p(expr.div(expr.sum(axis=1), axis=0) * 1e4)
+variables = set(lognorm.var().nlargest(2000).index)
+genes = [g for g in expr.columns if g in variables or g in set(tfs)]
+expr[genes].to_csv("expr_reducida.tsv", sep="\t")
+pd.Series(tfs).to_csv("tfs.txt", index=False, header=False)
+print(f"expr_reducida.tsv: {len(expr)} células × {len(genes)} genes  |  tfs.txt: {len(tfs)} TF")
+''')
+
+code(r'''
+%%time
+# ▶ GRNBoost2 de verdad. Equivale a:  pyscenic grn expr_reducida.tsv tfs.txt -o mi_adyacencias.tsv --num_workers 2 --seed 2026
+!arboreto_with_multiprocessing.py expr_reducida.tsv tfs.txt --method grnboost2 --output mi_adyacencias.tsv --num_workers {NUCLEOS} --seed 2026
+''')
+
+code(r'''
+# ¿Qué obtuviste? Tu tabla frente a la del servidor
+if os.path.exists("mi_adyacencias.tsv") and os.path.getsize("mi_adyacencias.tsv") > 0:
+    mia = pd.read_csv("mi_adyacencias.tsv", sep="\t")
+    adj = cargar("adyacencias")
+    print(f"Tu tabla: {len(mia):,} asociaciones de {mia.TF.nunique()} TF "
+          f"(servidor: 2,339,328 asociaciones con 10,120 genes)")
+    display(mia.head())
+    tf = "TBX21"
+    tuyo = mia[mia.TF == tf].nlargest(15, "importance").target.tolist()
+    servidor = adj[adj.TF == tf].nlargest(15, "importance").target.tolist()
+    print(f"Top 15 de {tf}, tu corrida: {', '.join(tuyo)}")
+    print(f"Top 15 de {tf}, servidor:   {', '.join(servidor)}")
+    print(f"En común: {len(set(tuyo) & set(servidor))} de 15")
+else:
+    print("No se generó mi_adyacencias.tsv (¿falló la instalación?). No pasa nada: seguimos con la tabla del servidor.")
+''')
+
+md(r"""
+### Explorar las asociaciones del servidor
+
+Ahora sí, a interpretar los resultados completos del servidor.
 """)
 
 code(r'''
@@ -221,6 +353,7 @@ md(r"""
 1. ¿Cuántos genes diana **candidatos** tiene TBX21? ¿Te parece realista que un TF regule *directamente* tantos genes?
 2. Mira el top 15: ¿reconoces genes típicos de **células NK** (pista: `NKG7`, `GNLY`, `PRF1`, `GZMA`)?
 3. ¿Qué representa el **peso** de la arista? ¿Significa que TBX21 *activa* esos genes?
+4. Compara **tu** top 15 de TBX21 (de la celda ▶) con el del servidor. Usamos la misma semilla: ¿por qué no coinciden del todo? *(Pista: ¿qué genes había en tu matriz?)*
 
 ✍️ *Tus respuestas:*
 """)
@@ -264,7 +397,138 @@ GRNBoost2 encuentra genes **coexpresados** con un TF, pero muchos pueden ser **e
 2. Para cada módulo pregunta: **¿las regiones reguladoras de estos genes están enriquecidas en el motivo de unión del TF?** (se usan bases precalculadas que ordenan ~27,000 genes según su puntuación para cada motivo, en ventanas de ±10 kb y −500/+100 pb alrededor del inicio de transcripción).
 3. Si el motivo está enriquecido (**NES ≥ 3**), conserva **solo los genes que tienen el motivo** → **regulón**.
 
-El cálculo ya está hecho; aquí comparamos el *antes* y el *después*.
+Primero lo corres tú con **tus** asociaciones; después comparamos el *antes* y el *después* con los resultados del servidor.
+
+### 🖥️ El comando: `pyscenic ctx`
+
+```bash
+pyscenic ctx adjacencies.tsv \
+    hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather \
+    hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather \
+    --annotations_fname motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl \
+    --expression_mtx_fname expression_demo.tsv \
+    --mode custom_multiprocessing --num_workers 20 --output regulons.csv
+```
+
+*(La `\` al final de una línea solo indica que el comando continúa en la siguiente.)*
+
+| Parte | Qué es | Valor usado | Por qué |
+|---|---|---|---|
+| `adjacencies.tsv` | 1.er argumento: las asociaciones que produjo `grn` | — | De aquí salen los módulos de cada TF |
+| `*.rankings.feather` | Una o varias **bases de ranking**: para cada motivo, los ~27,000 genes humanos ordenados según qué tan fuerte aparece el motivo cerca de su inicio de transcripción | ±10 kb y −500/+100 pb, genoma hg38 (~311 MB cada una) | Dos ventanas: una región amplia y el promotor cercano |
+| `--annotations_fname` | Tabla **motivo → TF** | `motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl` (99 MB) | Dice qué TF puede unirse a cada motivo |
+| `--expression_mtx_fname` | La misma matriz de expresión de `grn` | `expression_demo.tsv` | Para calcular correlaciones y armar los módulos |
+| `--mode` | Cómo repartir el trabajo entre núcleos | `custom_multiprocessing` | El más sencillo; no necesita `dask` |
+| `--num_workers` | Núcleos de CPU | 20 en el servidor; 2 en Colab | — |
+| `-o`, `--output` | Tabla de motivos enriquecidos con sus genes diana | `regulons.csv` | Cada TF con algún motivo enriquecido se convierte en un regulón |
+| `--nes_threshold` | NES mínimo para aceptar un motivo como enriquecido | 3.0 (por defecto) | Más alto = menos regulones, pero más confiables |
+| `--auc_threshold` | Fracción del ranking usada para calcular el enriquecimiento | 0.05 (por defecto) | — |
+| `--rank_threshold` | Hasta qué posición del ranking se buscan dianas con el motivo | 5000 (por defecto) | — |
+| `--thresholds`, `--top_n_targets`, `--top_n_regulators` | Cómo se arman los módulos: dianas por encima de los percentiles 75 y 90 de peso; las 50 mejores dianas de cada TF; los 5, 10 y 50 mejores TF de cada gen | valores por defecto | Varias formas de agrupar dan más oportunidades de encontrar el motivo |
+| `--min_genes` | Tamaño mínimo de un módulo | 20 (por defecto) | Los módulos pequeños son poco fiables |
+| `-a`, `--all_modules` | Incluir también regulones represores `(-)` | no (por defecto) | Por eso todos nuestros regulones son `(+)`, activadores |
+| `--mask_dropouts` | Ignorar las células con cero al calcular correlaciones | no (por defecto) | Comportamiento por defecto desde pySCENIC 0.9.16 |
+
+### ▶ Córrelo tú (≈ 1 min de descarga + 4 min de cálculo)
+
+Para ahorrar tiempo usamos **una sola base** (−500/+100 pb) con **tus** asociaciones de la sección 1. Primero hay que conseguir la base (≈ 313 MB) y la tabla de motivos (≈ 99 MB). Hay dos maneras:
+
+- **Opción 1 (por defecto): descarga directa** desde los servidores de aertslab. La descarga la hace Colab en la nube de Google, así que **no pasa por el wifi del salón**.
+- **Opción 2: Google Drive**, si el instructor compartió una carpeta con los dos archivos (o si la descarga directa falla):
+  1. Abre el enlace de la carpeta, clic derecho → *Organizar* → *Agregar acceso directo* → *Mi unidad*.
+  2. Escribe su ruta en `RUTA_DRIVE`, por ejemplo `"/content/drive/MyDrive/taller_pyscenic_recursos"`.
+  3. Ejecuta la celda. Colab te pedirá permiso para ver tu Drive.
+""")
+
+code(r'''
+# ▶ Consigue la base de ranking y la tabla de motivos (≈ 412 MB)
+import hashlib
+RUTA_DRIVE = ""   # ✏️ Opción 2: ruta a la carpeta compartida en tu Drive (déjala vacía para descargar)
+
+AERTS = "https://resources.aertslab.org/cistarget"
+RECURSOS = {   # archivo -> (carpeta en aertslab, SHA1 para comprobar que llegó completo)
+    "hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather":
+        (f"{AERTS}/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based",
+         "d9d4e927b80b2b35344aec0a9fc0a82ae9d76759"),
+    "motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl":
+        (f"{AERTS}/motif2tf", "8cba044ef45b389f4b85237931531906b3046182"),
+}
+
+def sha1(ruta):
+    h = hashlib.sha1()
+    with open(ruta, "rb") as f:
+        for bloque in iter(lambda: f.read(1 << 20), b""):
+            h.update(bloque)
+    return h.hexdigest()
+
+def conseguir(archivo):
+    carpeta, esperado = RECURSOS[archivo]
+    destino = os.path.join("recursos", archivo)
+    os.makedirs("recursos", exist_ok=True)
+    if os.path.exists(destino) and sha1(destino) == esperado:
+        return destino
+    if RUTA_DRIVE:
+        if not os.path.exists("/content/drive"):
+            from google.colab import drive
+            drive.mount("/content/drive")
+        shutil.copy(os.path.join(RUTA_DRIVE, archivo), destino)
+    elif os.environ.get("TALLER_RECURSOS"):            # solo para pruebas del instructor
+        shutil.copy(os.path.join(os.environ["TALLER_RECURSOS"], archivo), destino)
+    else:
+        urllib.request.urlretrieve(f"{carpeta}/{archivo}", destino)
+    if sha1(destino) != esperado:
+        os.remove(destino)
+        raise RuntimeError(f"{archivo} llegó incompleto o dañado; vuelve a ejecutar la celda")
+    return destino
+
+try:
+    for archivo in RECURSOS:
+        t0 = time.time()
+        ruta = conseguir(archivo)
+        print(f"✅ {archivo}  ({os.path.getsize(ruta) / 1e6:.0f} MB, {time.time() - t0:.0f} s)")
+    RECURSOS_LISTOS = True
+except Exception as e:
+    RECURSOS_LISTOS = False
+    print(f"⚠️ No se pudieron conseguir los recursos: {e}")
+    print("   Prueba la Opción 2 (Drive). Si tampoco funciona, no pasa nada: sigue con los regulones del servidor.")
+''')
+
+code(r'''
+%%time
+# ▶ cisTarget de verdad (≈ 4 min con 2 núcleos)
+if RECURSOS_LISTOS and os.path.exists("mi_adyacencias.tsv"):
+    !pyscenic ctx mi_adyacencias.tsv recursos/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather --annotations_fname recursos/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl --expression_mtx_fname expr_reducida.tsv --mode custom_multiprocessing --num_workers {NUCLEOS} --output mi_regulones.csv
+else:
+    print("Falta mi_adyacencias.tsv (sección 1) o la base de ranking. Seguimos con los regulones del servidor.")
+''')
+
+code(r'''
+# ¿Cuántos regulones obtuviste? Tus regulones frente a los del servidor
+import ast
+
+def leer_regulones_ctx(ruta):
+    """Lee la salida de `pyscenic ctx` y devuelve {regulón: genes}, uniendo los motivos de cada TF."""
+    tabla = pd.read_csv(ruta, header=[0, 1], index_col=[0, 1], skiprows=[2])
+    regulones = {}
+    for (tf, _motivo), dianas in tabla[("Enrichment", "TargetGenes")].items():
+        dianas = re.sub(r"np\.float\d*\(([^)]*)\)", r"\1", dianas)   # numpy 2 escribe np.float64(0.5)
+        regulones.setdefault(f"{tf}(+)", set()).update(gen for gen, _peso in ast.literal_eval(dianas))
+    return regulones
+
+if os.path.exists("mi_regulones.csv") and os.path.getsize("mi_regulones.csv") > 0:
+    mios = leer_regulones_ctx("mi_regulones.csv")
+    servidor = cargar("regulones").groupby("regulon").target.apply(set).to_dict()
+    print(f"Tus regulones: {len(mios)}  |  servidor: {len(servidor)}  |  en común: {len(set(mios) & set(servidor))}")
+    display(pd.DataFrame([{"regulón": r, "genes (tu corrida)": len(mios.get(r, set())),
+                           "genes (servidor)": len(servidor[r]),
+                           "genes en común": len(mios.get(r, set()) & servidor[r])}
+                          for r in ["MAFB(+)", "EBF1(+)", "TBX21(+)", "FOS(+)", "SPI1(+)"]]).set_index("regulón"))
+else:
+    print("No hay mi_regulones.csv. No pasa nada: seguimos con los regulones del servidor.")
+''')
+
+md(r"""
+### Los regulones del servidor
 """)
 
 code(r'''
@@ -340,6 +604,12 @@ md(r"""
 1. ¿Qué fracción de los candidatos de TBX21 sobrevivió? ¿Qué criterio usó cisTarget para descartar el resto?
 2. **RPS4X** tenía las asociaciones más fuertes de toda la red. ¿Por qué no tiene regulón? ¿Qué nos dice sobre usar solo coexpresión?
 3. **PAX5** es un TF esencial de células B y sus candidatos son genes B "de libro" (`IGHM`, `CD79B`, `CD40`…), pero **no tiene regulón**. ¿Significa que PAX5 no regula esos genes? *(Pistas: calidad/cobertura de los motivos, umbral de NES, ventanas genómicas usadas, elementos reguladores lejanos.)*
+4. **Tu corrida** dio un número de regulones distinto de los **272** del servidor. ¿Por qué? Piensa en:
+   - cuántos genes usaste (2,829 frente a 10,120);
+   - cuántas bases de ranking (1 frente a 2);
+   - que GRNBoost2 tiene un componente aleatorio.
+
+   ¿Qué implica para confiar en un regulón concreto? *(Por eso SCENIC recomienda repetir el análisis varias veces y quedarse con los regulones que aparecen siempre.)*
 
 ✍️ *Tus respuestas:*
 """)
@@ -364,6 +634,83 @@ md(r"""
 - Compara **el mismo regulón entre células/poblaciones**; los valores absolutos de regulones distintos no son directamente comparables.
 
 > 🔑 **Regla de oro:** une tablas **por ID de célula**, nunca suponiendo que las filas están en el mismo orden.
+
+### 🖥️ El comando: `pyscenic aucell`
+
+```bash
+pyscenic aucell expression_demo.tsv regulons.csv -o auc_mtx.csv --num_workers 20 --seed 2026
+```
+
+| Parte | Qué es | Valor usado | Por qué |
+|---|---|---|---|
+| `expression_demo.tsv` | 1.er argumento: matriz de expresión (células × genes) | la completa, 10,120 genes | El ranking de cada célula usa **todos** los genes |
+| `regulons.csv` | 2.º argumento: los regulones. Acepta la salida de `ctx` (`.csv`) o archivos `.gmt`, `.yaml` y `.dat` | los 272 regulones | — |
+| `-o`, `--output` | Matriz de actividad (células × regulones), en `.csv` o `.loom` | `auc_mtx.csv` | — |
+| `--auc_threshold` | Fracción superior del ranking que se mira | 0.05 (por defecto): el top 5 %, ~505 genes | Solo importa si las dianas están **arriba** del ranking |
+| `--seed` | Semilla para desempatar genes con la misma expresión (muy común: muchos ceros) | 2026 | Sin semilla, los valores cambian un poco en cada corrida |
+| `-w`, `--weights` | Usar los pesos de los genes del regulón | no (por defecto) | Todos los genes del regulón cuentan igual |
+| `--num_workers` | Núcleos de CPU | 20 en el servidor; 2 en Colab | — |
+| `-t`, `--transpose` | Si la matriz tiene genes en filas | no | — |
+
+### ▶ Córrelo tú (≈ 10 s)
+
+Aquí usamos la **matriz completa** y los **272 regulones del servidor**, guardados en formato `.gmt`: una línea por regulón con su nombre, una descripción y sus genes. Con la misma semilla deberías obtener **exactamente** la matriz del servidor.
+""")
+
+code(r'''
+# ▶ Prepara las entradas: matriz completa (sin comprimir) y regulones del servidor en formato .gmt
+expr = cargar("expresion")
+expr.to_csv("expression_demo.tsv", sep="\t")
+reg = cargar("regulones")
+with open("regulones_servidor.gmt", "w") as f:
+    for nombre, d in reg.groupby("regulon"):
+        f.write("\t".join([nombre, "regulon pySCENIC"] + d.target.tolist()) + "\n")
+print(f"expression_demo.tsv: {expr.shape[0]} células × {expr.shape[1]} genes  |  "
+      f"regulones_servidor.gmt: {reg.regulon.nunique()} regulones")
+''')
+
+code(r'''
+%%time
+# ▶ AUCell de verdad
+!pyscenic aucell expression_demo.tsv regulones_servidor.gmt -o mi_auc.csv --num_workers {NUCLEOS} --seed 2026
+''')
+
+code(r'''
+# ¿Obtuviste lo mismo que el servidor?
+if os.path.exists("mi_auc.csv") and os.path.getsize("mi_auc.csv") > 0:
+    mi_auc = pd.read_csv("mi_auc.csv", index_col=0)
+    auc_servidor = cargar("auc")
+    dif = (mi_auc.loc[auc_servidor.index, auc_servidor.columns] - auc_servidor).abs().to_numpy().max()
+    print(f"Tu matriz AUCell: {mi_auc.shape[0]} células × {mi_auc.shape[1]} regulones")
+    print(f"Diferencia máxima con el servidor: {dif:.1e}",
+          "✅ idéntico" if dif < 1e-9 else "⚠️ distinto (avisa al instructor)")
+else:
+    print("No se generó mi_auc.csv. No pasa nada: seguimos con la matriz del servidor.")
+''')
+
+md(r"""
+**(Opcional, si corriste cisTarget en la sección 2)** Calcula la actividad de **tus propios** regulones y compárala con la de los del servidor:
+""")
+
+code(r'''
+# ▶ (Opcional) AUCell con TUS regulones
+if os.path.exists("mi_regulones.csv") and os.path.getsize("mi_regulones.csv") > 0:
+    !pyscenic aucell expression_demo.tsv mi_regulones.csv -o mi_auc_propio.csv --num_workers {NUCLEOS} --seed 2026
+if os.path.exists("mi_auc_propio.csv"):
+    propio = pd.read_csv("mi_auc_propio.csv", index_col=0)
+    servidor = cargar("auc")
+    pob = cargar("metadatos")["population"]
+    comparar = [r for r in ["MAFB(+)", "EBF1(+)", "TBX21(+)", "FOS(+)", "SPI1(+)"] if r in propio.columns]
+    tabla = pd.concat({"tu corrida": propio[comparar].groupby(pob).median().loc[ORDEN].T,
+                       "servidor": servidor[comparar].groupby(pob).median().loc[ORDEN].T}, axis=1)
+    print("Mediana de AUC por población (solo regulones que aparecen en ambas corridas):")
+    display(tabla.round(3))
+else:
+    print("No hay regulones propios (no corriste cisTarget). No pasa nada.")
+''')
+
+md(r"""
+### Actividad de los regulones del servidor
 """)
 
 code(r'''
@@ -447,13 +794,9 @@ print(f"✅ Ejercicio 3 listo: AUCell {auc.shape[0]} células × {auc.shape[1]} 
 # =============================================================================
 md(r"""
 ---
-## 4 · *(Opcional)* AUCell en vivo
+## 4 · *(Opcional)* AUCell por dentro
 
-Hasta ahora usamos resultados precalculados. Aquí **calculas AUCell tú mismo** con la misma matriz y los mismos regulones, y comprobamos que obtienes **lo mismo**.
-
-- **4.1 AUCell desde cero** (solo `pandas`/`numpy`, ~1 s): siempre funciona.
-- **4.2 pySCENIC real** (instala el paquete oficial, ~1 min): puede fallar según la versión de Colab; si falla, no pasa nada.
-- **4.3 Comparación** de lo que hayas podido calcular contra el resultado precalculado.
+En la sección 3 corriste `pyscenic aucell` como una caja negra. Aquí lo **programas desde cero** en unas pocas líneas de `pandas`/`numpy` y compruebas que da **exactamente** lo mismo.
 
 ### 4.1 · AUCell desde cero
 
@@ -519,85 +862,12 @@ auc_cero = aucell_desde_cero(expr, regulones)
 print(f"AUCell desde cero: {auc_cero.shape} en {time.time() - t0:.1f} s")
 auc_pre = cargar("auc")
 dif = (auc_cero[auc_pre.columns].loc[auc_pre.index] - auc_pre).abs().to_numpy().max()
-print(f"Diferencia máxima con el resultado precalculado de pySCENIC: {dif:.1e}",
+print(f"Diferencia máxima con el resultado del servidor: {dif:.1e}",
       "✅ (idéntico)" if dif < 1e-9 else "⚠️ (distinto; avisa al instructor)")
-''')
-
-md(r"""
-### 4.2 · *(Opcional)* pySCENIC real
-
-La siguiente celda **escribe un pequeño script** que usa el paquete oficial `pyscenic`. La celda de después lo **instala** (en una carpeta aparte, para no afectar al resto del notebook) y lo **ejecuta**. Tarda ~1 minuto. Si falla, simplemente continúa: ya tienes el resultado de 4.1.
-""")
-
-code(r'''
-%%writefile aucell_pyscenic.py
-# AUCell con el paquete oficial pySCENIC (mismas opciones que el CLI: sin pesos, umbral 0.05, semilla 2026)
-import sys, pandas as pd
-from ctxcore.genesig import Regulon
-from pyscenic.aucell import aucell
-
-carpeta = sys.argv[1]
-expr = pd.read_csv(f"{carpeta}/data/expression_demo.tsv.gz", sep="\t", index_col="cell_id")
-reg = pd.read_csv(f"{carpeta}/results/regulons_demo.csv")
-firmas = [Regulon(name=n, gene2weight={g: 1.0 for g in d.target}, transcription_factor=d.TF.iloc[0],
-                  gene2occurrence=[]) for n, d in reg.groupby("regulon")]
-auc = aucell(expr, firmas, auc_threshold=0.05, noweights=True, seed=2026, num_workers=2)
-auc.to_csv("auc_pyscenic_vivo.csv")
-print("pySCENIC AUCell OK:", auc.shape)
-''')
-
-code(r'''
-import subprocess
-auc_vivo = None
-try:
-    if not os.path.exists("pyscenic_pkgs/pyscenic"):
-        print("Instalando pySCENIC 0.12.1 en ./pyscenic_pkgs (≈1 min)…")
-        subprocess.run([sys.executable, "-m", "pip", "install", "-q", "--target", "pyscenic_pkgs",
-                        "pyscenic==0.12.1", "setuptools<81"], check=True, timeout=420,
-                       capture_output=True, text=True)
-    t0 = time.time()
-    salida = subprocess.run([sys.executable, "aucell_pyscenic.py", CARPETA], check=True, timeout=300,
-                            capture_output=True, text=True,
-                            env={**os.environ, "PYTHONPATH": os.path.abspath("pyscenic_pkgs")})
-    print(salida.stdout.strip(), f"({time.time() - t0:.0f} s)")
-    auc_vivo = pd.read_csv("auc_pyscenic_vivo.csv", index_col=0)
-except subprocess.TimeoutExpired:
-    print("⏱️ Tardó demasiado. No pasa nada: continúa con el resultado de 4.1.")
-except subprocess.CalledProcessError as e:
-    print("⚠️ pySCENIC no funcionó en este Colab. No pasa nada: continúa con el resultado de 4.1.")
-    import re
-    lineas = [l for l in re.sub(r"\x1b\[[0-9;]*m", "", e.stderr or "").splitlines() if l.strip()]
-    print("   Últimas líneas del error:\n   " + "\n   ".join(lineas[-2:]))
-''')
-
-md(r"""
-### 4.3 · Comparación
-""")
-
-code(r'''
-auc_pre = cargar("auc")
-fuentes = {"precalculado (servidor)": auc_pre}
-if "auc_cero" in globals():
-    fuentes["desde cero (4.1)"] = auc_cero
-if globals().get("auc_vivo") is not None:
-    fuentes["pySCENIC en vivo (4.2)"] = auc_vivo
-
-for nombre, tabla in fuentes.items():
-    d = (tabla.loc[auc_pre.index, auc_pre.columns] - auc_pre).abs().to_numpy().max()
-    print(f"{nombre:<26} diferencia máxima vs precalculado = {d:.1e}")
-
-RG = "MAFB(+)"
-otros = [n for n in fuentes if n != "precalculado (servidor)"]
-if otros:
-    fig, axs = plt.subplots(1, len(otros), figsize=(4.2 * len(otros), 4), squeeze=False)
-    for ax, n in zip(axs[0], otros):
-        ax.scatter(auc_pre[RG], fuentes[n].loc[auc_pre.index, RG], s=5,
-                   c=[COLOR[p] for p in meta.loc[auc_pre.index, "population"]])
-        lim = [0, auc_pre[RG].max() * 1.05]
-        ax.plot(lim, lim, "k--", lw=0.8)
-        ax.set(xlabel=f"{RG} precalculado", ylabel=f"{RG} {n}", title="Cada punto = una célula")
-    plt.tight_layout()
-    plt.show()
+if os.path.exists("mi_auc.csv"):
+    mi_auc = pd.read_csv("mi_auc.csv", index_col=0)
+    dif2 = (auc_cero[mi_auc.columns].loc[mi_auc.index] - mi_auc).abs().to_numpy().max()
+    print(f"Diferencia máxima con tu `pyscenic aucell` de la sección 3: {dif2:.1e}")
 ''')
 
 # =============================================================================
@@ -666,21 +936,35 @@ md(r"""
 - **Ausencia:** que un TF no tenga regulón (p. ej. PAX5) **no** significa que no regule nada; las bases de motivos y las ventanas genómicas son incompletas.
 - **Generalización:** **un solo donante**, **900 células** submuestreadas y etiquetas de población **inferidas** por nosotros.
 - **Artefactos técnicos:** genes de estrés/respuesta temprana (FOS, JUN), número de genes detectados por célula y *dropout* pueden influir.
-- **Variabilidad:** GRNBoost2 es estocástico; los regulones pueden cambiar algo entre ejecuciones (por eso SCENIC recomienda repetir varias veces).
+- **Variabilidad:** GRNBoost2 es estocástico y el resultado depende de los genes y las bases que uses. Lo viste en la sección 2: tu corrida no dio los mismos regulones que el servidor. Por eso SCENIC recomienda repetir el análisis varias veces.
 
-### Cómo se calcularon estos datos (no lo ejecutes aquí)
+### Resumen: el pipeline completo en tres comandos
+
+Esto es lo que corrió el instructor en el servidor (20 núcleos). En tu computadora o servidor usarías los mismos comandos:
 
 ```bash
-# 1) GRNBoost2                     (~2 min con 20 núcleos)
+# 1) GRNBoost2   (~2 min con 20 núcleos)
 pyscenic grn expression_demo.tsv allTFs_hg38.txt -o adjacencies.tsv --num_workers 20 --seed 2026
-# 2) cisTarget                     (~5 min; bases de ranking hg38 v10, ~620 MB)
+# 2) cisTarget   (~5 min; dos bases de ranking hg38 v10, ~620 MB)
 pyscenic ctx adjacencies.tsv hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather \
     hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather \
     --annotations_fname motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl \
-    --expression_mtx_fname expression_demo.tsv --mode custom_multiprocessing --output regulons.csv
-# 3) AUCell                        (~5 s)
-pyscenic aucell expression_demo.tsv regulons.csv -o auc_mtx.csv --seed 2026
+    --expression_mtx_fname expression_demo.tsv --mode custom_multiprocessing --num_workers 20 --output regulons.csv
+# 3) AUCell      (~5 s)
+pyscenic aucell expression_demo.tsv regulons.csv -o auc_mtx.csv --num_workers 20 --seed 2026
 ```
+
+- **Dónde se corrió:** en la imagen oficial de contenedor `aertslab/pyscenic:0.12.1`, que trae las versiones de librerías con las que pySCENIC funciona sin arreglos.
+- **En Colab o con un Python reciente** hacen falta los arreglos de la sección 0, y `arboreto_with_multiprocessing.py` en lugar de `pyscenic grn`.
+
+### 🏠 Para casa: el pipeline completo, sin límite de tiempo
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](COLAB_CASA)
+
+El notebook **`Pipeline_completo_casa.ipynb`** corre los tres pasos completos en Colab. Puedes elegir entre dos matrices:
+
+- **demo:** las mismas 900 células y 10,120 genes de hoy. Tarda ~30 min y debería reproducir los resultados del servidor.
+- **completa:** el dataset entero de 10x, 10,280 células tras el control de calidad. Tarda ~2–3 h.
 
 ### Para seguir aprendiendo
 
@@ -688,7 +972,7 @@ pyscenic aucell expression_demo.tsv regulons.csv -o auc_mtx.csv --seed 2026
 - Protocolo SCENIC (Van de Sande *et al.*, 2020, *Nature Protocols*) y notebooks: <https://github.com/aertslab/SCENICprotocol>
 - Recursos (listas de TF, motivos, bases de ranking): <https://resources.aertslab.org/cistarget/>
 - Datos originales: <https://support.10xgenomics.com/single-cell-gene-expression/datasets/3.0.0/pbmc_10k_v3>
-""")
+""".replace("COLAB_CASA", COLAB_CASA))
 
 nb = {
     "cells": cells,
