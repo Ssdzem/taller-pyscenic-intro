@@ -81,13 +81,15 @@ En cada ejercicio encontrarás dos tipos de bloque nuevos:
 
 | Sección | Qué harás | Minutos aprox. |
 |---|---|---|
-| 0 · Preparación | Descargar datos, instalar pySCENIC y ver las poblaciones | 15–25 |
-| 1 · GRNBoost2 | Correr `grn` (≈ 2 min) y explorar asociaciones TF–gen | 25–45 |
-| 2 · cisTarget | Correr `ctx` (≈ 5 min) y ver cómo se podan los regulones | 45–65 |
-| 3 · AUCell | Correr `aucell` (≈ 10 s) y comparar actividad entre poblaciones | 65–90 |
+| 0 · Preparación | Descargar datos, instalar pySCENIC y ver las poblaciones | 16–22 |
+| 1 · GRNBoost2 | Correr `grn` (≈ 2 min) y explorar asociaciones TF–gen | 22–44 |
+| 2 · cisTarget | Correr `ctx` (≈ 5 min) y ver cómo se podan los regulones | 44–68 |
+| 3 · AUCell | Correr `aucell` (≈ 10 s) y comparar actividad entre poblaciones | 68–86 |
 | 4 · *(Opcional)* AUCell por dentro | Programar AUCell desde cero | si da tiempo |
-| 5 · Interpretación en parejas | Proponer una hipótesis | 90–110 |
-| 6 · Limitaciones y recursos | Qué se puede y qué no se puede concluir | 110–120 |
+| 5 · Interpretación en parejas | Proponer una hipótesis | 91–108 |
+| 6 · Limitaciones y recursos | Qué se puede y qué no se puede concluir | 108–120 |
+
+🔁 **Mientras corren `grn` y `ctx`** el instructor explica en las diapositivas qué hace cada paso por dentro. Lanza la celda y voltea a la pantalla.
 
 💡 **Si una celda falla, no te preocupes:** cada sección vuelve a cargar lo que necesita. Avísale al instructor y continúa con la siguiente.
 """)
@@ -877,7 +879,7 @@ if os.path.exists("mi_auc.csv"):
 # =============================================================================
 md(r"""
 ---
-## 5 · Interpretación en parejas (20 min)
+## 5 · Interpretación en parejas (17 min)
 
 Elijan **un regulón** (pueden usar la lista de abajo como inspiración), generen su "ficha" y completen la plantilla.
 """)
