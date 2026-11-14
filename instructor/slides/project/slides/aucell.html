@@ -1,0 +1,35 @@
+<section id="aucell" data-transition="fade">
+<div class="head">
+<p class="eyebrow">Paso ③ por dentro · antes de correr aucell</p>
+<h2>AUCell: ¿las dianas están arriba en esta célula?</h2>
+</div>
+<div class="row" style="gap:48px;">
+<ol class="steplist" style="flex:1;">
+<li>En cada célula, ordena sus 10,120 genes de más a menos expresado. Solo importa el orden <b>dentro</b> de la célula: no hace falta normalizar.</li>
+<li>Recorre el 5 % de arriba (506 genes) y cuenta cuántos genes del regulón va encontrando: otra curva de recuperación.</li>
+<li><b>AUC</b> = el área bajo esa curva, de 0 a 1. Un número por célula y regulón: la matriz de 900 × 272.</li>
+</ol>
+<div class="figure" style="--i:0; width:688px;">
+<svg aria-label="Esquema: en una célula B, los genes del regulón EBF1(+) aparecen pronto en el ranking y la curva sube; en un monocito casi no aparecen y la curva se queda plana. El área bajo cada curva es su AUC." width="640" height="411" viewBox="0 0 732 470" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Sans, Arial, sans-serif">
+<path d="M90,380 L130,380 L130,350 L190,350 L190,320 L230,320 L230,290 L330,290 L330,260 L420,260 L420,230 L560,230 L560,200 L650,200 L650,380 Z" fill="#147A5C" opacity="0.18"/>
+<path d="M90,380 L130,380 L130,350 L190,350 L190,320 L230,320 L230,290 L330,290 L330,260 L420,260 L420,230 L560,230 L560,200 L650,200" fill="none" stroke="#147A5C" stroke-width="5"/>
+<path d="M90,380 L520,380 L520,350 L650,350" fill="none" stroke="#B34A00" stroke-width="5"/>
+<line x1="90" y1="380" x2="680" y2="380" stroke="#1E2433" stroke-width="3"/>
+<line x1="90" y1="380" x2="90" y2="100" stroke="#1E2433" stroke-width="3"/>
+<text x="385" y="420" font-size="28" text-anchor="middle" fill="#4A5263">ranking de la célula (506 genes) →</text>
+<text x="40" y="240" font-size="28" text-anchor="middle" fill="#4A5263" transform="rotate(-90 40 240)">dianas de EBF1(+) halladas</text>
+<text x="360" y="186" font-size="28" fill="#147A5C" font-weight="600">una célula B: AUC alto</text>
+<text x="330" y="336" font-size="28" fill="#B34A00" font-weight="600">un monocito: AUC ≈ 0</text>
+<text x="90" y="40" font-size="32" fill="#1E2433" font-weight="600">Misma lista de dianas, distinta célula</text>
+<text x="90" y="76" font-size="28" fill="#4A5263">esquema · el área sombreada es el AUC</text>
+</svg>
+</div>
+</div>
+<p class="callout" style="--i:2">EBF1(+): AUC &gt; 0 en <b>259 de 300</b> células B y en 134 de 600 de las otras.</p>
+<aside>Minutos 68–73. Esta va ANTES de correr aucell (tarda ~10 s, no da tiempo de explicar mientras corre).
+1) Ranking por célula: para cada célula se ordenan sus genes por conteo. Como solo se compara el orden dentro de la misma célula, no importa si una célula se secuenció más que otra: no hay que normalizar.
+2) Se recorre solo el 5 % de arriba (5 % de 10,120 = 506 genes; flag --auc_threshold 0.05) y se cuenta cuántas dianas del regulón aparecen. Es la misma idea de curva de recuperación de cisTarget, pero ahora el ranking es de la célula y no del motivo.
+3) El AUC es el área bajo esa curva, normalizada a 0–1. 0 = ninguna diana entre los 506 genes más expresados.
+Datos reales del callout: EBF1(+) (14 dianas) tiene AUC > 0 en 259 de 300 células B y en 134 de 600 de las otras; la mediana es 0.049 en B y 0 en monocitos y NK. Ojo: los valores de AUC son pequeños en números absolutos; lo que importa es compararlos entre células.
+Después corren aucell y comprueban que su matriz es idéntica a la del servidor. Si sobra tiempo, la sección 4 del notebook reconstruye AUCell desde cero con esta misma lógica.</aside>
+</section>

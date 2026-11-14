@@ -1,0 +1,52 @@
+<section id="circuitos" data-transition="fade">
+<div class="head">
+<p class="eyebrow">Teoría · 3 · circuitos</p>
+<h2>Circuitos pequeños que se repiten</h2>
+</div>
+<div class="row">
+<div class="card" style="--i:0">
+<p class="tag">Autorregulación</p>
+<svg aria-label="SPI1 con una flecha que sale de él y regresa a él." width="400" height="160" viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Sans, Arial, sans-serif">
+<defs><marker id="c1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4A5263"/></marker></defs>
+<path d="M250,100 C330,100 330,20 200,20 C110,20 110,60 140,82" fill="none" stroke="#4A5263" stroke-width="3" marker-end="url(#c1a)"/>
+<rect x="140" y="84" width="120" height="48" rx="24" fill="#B34A00"/><text x="200" y="117" font-size="24" font-weight="600" text-anchor="middle" fill="#F7F5F0">SPI1</text>
+</svg>
+<p class="txt"><b>Memoria:</b> una vez encendido, se sostiene solo.</p>
+<p class="txt">PU.1 (de SPI1) activa su propio gen.</p>
+</div>
+<div class="card" style="--i:1">
+<p class="tag">Hacia adelante</p>
+<svg aria-label="SPI1 activa a CEBPB y a KLF4; CEBPB también activa a KLF4." width="400" height="160" viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Sans, Arial, sans-serif">
+<defs><marker id="c2a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4A5263"/></marker></defs>
+<g stroke="#4A5263" stroke-width="3" marker-end="url(#c2a)"><line x1="142" y1="28" x2="256" y2="28"/><line x1="100" y1="52" x2="170" y2="106"/><line x1="300" y1="52" x2="230" y2="106"/></g>
+<g font-size="24" font-weight="600" text-anchor="middle" fill="#F7F5F0">
+<rect x="20" y="4" width="120" height="48" rx="24" fill="#B34A00"/><text x="80" y="37">SPI1</text>
+<rect x="260" y="4" width="120" height="48" rx="24" fill="#B34A00"/><text x="320" y="37">CEBPB</text>
+<rect x="140" y="108" width="120" height="48" rx="24" fill="#B34A00"/><text x="200" y="141">KLF4</text>
+</g>
+</svg>
+<p class="txt"><b>Filtro:</b> KLF4 solo se enciende si SPI1 dura lo suficiente.</p>
+<p class="txt">Hay uno por población; en NK: TBX21 → EOMES → RUNX3.</p>
+</div>
+<div class="card" style="--i:2">
+<p class="tag">Retroalimentación</p>
+<svg aria-label="SPI1 activa a CEBPB y CEBPB activa a SPI1." width="400" height="160" viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Sans, Arial, sans-serif">
+<defs><marker id="c3a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4A5263"/></marker></defs>
+<path d="M90,52 C130,4 270,4 310,52" fill="none" stroke="#4A5263" stroke-width="3" marker-end="url(#c3a)"/>
+<path d="M310,108 C270,156 130,156 90,108" fill="none" stroke="#4A5263" stroke-width="3" marker-end="url(#c3a)"/>
+<g font-size="24" font-weight="600" text-anchor="middle" fill="#F7F5F0">
+<rect x="20" y="56" width="120" height="48" rx="24" fill="#B34A00"/><text x="80" y="89">SPI1</text>
+<rect x="260" y="56" width="120" height="48" rx="24" fill="#B34A00"/><text x="320" y="89">CEBPB</text>
+</g>
+</svg>
+<p class="txt"><b>Candado:</b> el programa se queda encendido. Si se reprimen, hay que escoger uno.</p>
+<p class="txt">SPI1 ⇄ CEBPB en nuestros datos.</p>
+</div>
+</div>
+<p class="callout" style="--i:3">En los libros se llaman <b>motivos de red</b>. No confundir con el motivo de ADN de la diapositiva 16.</p>
+<aside>Minutos 6–8. Si miras una red grande, ciertos circuitos de 1–3 genes aparecen muchas más veces que al azar (Milo et al. 2002, Science; Alon 2007, Nat Rev Genet). Cada uno hace algo:
+1) Autorregulación: el TF enciende su propio gen. Da memoria: un pulso basta para dejarlo encendido. PU.1 (proteína de SPI1) activa su propio gen a través de un potenciador río arriba (Okuno et al. 2005, Mol Cell Biol). Ojo con nuestros datos: en 153 de 272 regulones el TF aparece como diana de sí mismo, pero no es evidencia de coexpresión: pySCENIC mete al TF en su propio módulo (peso 1.0) y solo queda si su promotor tiene el motivo.
+2) Hacia adelante (feed-forward): A → B, A → C y B → C. C solo se enciende si A dura lo suficiente para encender a B: filtra pulsos cortos de ruido (Mangan y Alon 2003, PNAS). Los tres triángulos son reales en nuestros regulones, uno por población: SPI1 → CEBPB → KLF4 y SPI1 → KLF4 (monocitos); SPIB → POU2AF1 → EBF1 y SPIB → EBF1 (B); TBX21 → EOMES → RUNX3 y TBX21 → RUNX3 (NK).
+3) Retroalimentación: dos TF que se regulan entre sí. Si se activan, el programa se "traba" encendido (nuestros datos: SPI1 → CEBPB con importancia 38.2 y CEBPB → SPI1 con 21.5). Si se reprimen, la célula tiene que escoger: PU.1 y GATA1 se bloquean mutuamente y así se decide entre linaje mieloide y eritroide (Rekhtman et al. 1999, Genes Dev; Zhang et al. 1999, PNAS). Nosotros no vemos represiones porque pySCENIC solo reporta flechas (+).
+Aclara el nombre: "motivo de red" es un circuito; "motivo" a secas, en el resto del taller, es la secuencia de ADN.</aside>
+</section>

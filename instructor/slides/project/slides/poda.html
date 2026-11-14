@@ -1,0 +1,26 @@
+<section id="poda" class="warm" data-transition="fade">
+<div class="head">
+<p class="eyebrow">Paso ② en nuestros datos · 1,018 TF → 272 regulones</p>
+<h2>¿Quién sobrevive a la poda?</h2>
+</div>
+<table class="data">
+<tr><th style="width:11%">TF</th><th class="n" style="width:15%">Candidatos</th><th class="n" style="width:16%">En el regulón</th><th class="n" style="width:11%">Motivos</th><th style="width:47%">Qué pasó</th></tr>
+<tr><td class="tf">SPI1</td><td class="n">5,829</td><td class="n">3,106</td><td class="n">41</td><td>El regulón más grande de todos</td></tr>
+<tr><td class="tf">TBX21</td><td class="n">3,299</td><td class="n">1,014</td><td class="n">28</td><td>Sobrevive con muchas dianas</td></tr>
+<tr><td class="tf">EBF1</td><td class="n">1,625</td><td class="n">14</td><td class="n">1</td><td>Sobrevive por poco: un motivo, NES 3.37</td></tr>
+<tr><td class="tf">MAFB</td><td class="n">4,712</td><td class="n">37</td><td class="n">13</td><td>12 de sus 13 motivos vienen de la base de ±10 kb</td></tr>
+<tr class="hl"><td>PAX5</td><td class="n">2,158</td><td class="n">—</td><td class="n">0</td><td>45 motivos anotados, ninguno llegó a NES ≥ 3</td></tr>
+<tr class="hl"><td>ANXA1</td><td class="n">6,532</td><td class="n">—</td><td class="n">—</td><td>Sin motivo anotado: no puede tener regulón</td></tr>
+<tr class="hl"><td>RPS4X</td><td class="n">6,978</td><td class="n">—</td><td class="n">—</td><td>Proteína ribosomal, sin motivo</td></tr>
+</table>
+<p class="callout" style="--i:1">Dos bases: <b>−500/+100 pb</b> (promotor) y <b>±10 kb</b> (incluye regiones reguladoras cercanas). En clase usamos solo la primera y 2,829 genes: por eso salen ~150 regulones y no 272.</p>
+<aside>Minutos 58–60, justo antes de volver al notebook. Es el resumen de la poda en varios TF. Todos los números son del servidor (900 células, 10,120 genes, dos bases).
+Lee la tabla de arriba abajo:
+- SPI1 y TBX21: muchos candidatos y muchos motivos enriquecidos; regulones grandes.
+- EBF1: de 1,625 candidatos quedan 14, con un solo motivo apenas arriba del umbral (NES 3.37). Aun así es el regulón más específico de las células B.
+  Ojo (solo para ti): al reproducir cisTarget encontramos que pySCENIC 0.12.1 puede asignar a un motivo la lista de dianas de otro motivo del mismo grupo de candidatas cuando hay varios enriquecidos. Las 14 dianas de EBF1(+) salen de la curva de un motivo de IRF6 (jaspar MA1509.1, NES 3.73), no de la del motivo de EBF1 (que daría 18). El NES de cada motivo y la lista de candidatas sí son correctos. Si alguien pregunta: los regulones de pySCENIC 0.12.1 son aproximados también por esto (STATUS, paso 55).
+- MAFB: casi todo su apoyo viene de la base de ±10 kb, que en clase no usamos. Predicción para sus corridas: MAFB(+) probablemente no aparezca (en nuestras pruebas apareció en 2 de 4 corridas, siempre con la base de ±10 kb).
+- PAX5: es un TF B clásico con 45 motivos propios en la tabla, pero ningún módulo alcanzó NES ≥ 3. Ausencia de regulón ≠ ausencia de regulación.
+- ANXA1 y RPS4X: dominaban GRNBoost2 (más de 6,500 candidatos cada uno), pero no tienen motivo anotado. cisTarget los elimina: esta es la razón de pedir dos evidencias.
+Pregunta al grupo: ¿cuántos regulones sacaron ustedes? (pregunta 4 del ejercicio 2).</aside>
+</section>

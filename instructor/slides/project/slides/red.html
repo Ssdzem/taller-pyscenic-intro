@@ -1,0 +1,57 @@
+<section id="red" data-transition="fade">
+<div class="head">
+<p class="eyebrow">Teoría · 2 · la red</p>
+<h2>¿Qué es una red de regulación génica?</h2>
+</div>
+<div class="row" style="align-items:center; gap:56px;">
+<div class="figure" style="--i:0; width:1004px;">
+<svg aria-label="Tres pedazos reales de nuestra red. Monocitos: SPI1 y CEBPB se activan entre sí y los dos activan LYZ y FCN1. Células B: SPIB activa a EBF1 y los dos activan MZB1 y CD24. Células NK: TBX21 activa a EOMES y los dos activan NKG7 y GZMB." width="956" height="382" viewBox="0 0 1000 400" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Sans, Arial, sans-serif">
+<defs><marker id="rda" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4A5263"/></marker></defs>
+<g font-size="28" font-weight="600" text-anchor="middle">
+<text x="170" y="40" fill="#B34A00">Monocitos</text>
+<text x="500" y="40" fill="#147A5C">Células B</text>
+<text x="830" y="40" fill="#5E58A0">Células NK</text>
+</g>
+<g stroke="#4A5263" stroke-width="3" fill="none" marker-end="url(#rda)">
+<line x1="110" y1="140" x2="110" y2="290"/><line x1="230" y1="140" x2="230" y2="290"/><line x1="120" y1="140" x2="214" y2="290"/><line x1="220" y1="140" x2="126" y2="290"/>
+<line x1="440" y1="140" x2="440" y2="290"/><line x1="560" y1="140" x2="560" y2="290"/><line x1="450" y1="140" x2="544" y2="290"/><line x1="550" y1="140" x2="456" y2="290"/>
+<line x1="770" y1="140" x2="770" y2="290"/><line x1="890" y1="140" x2="890" y2="290"/><line x1="780" y1="140" x2="874" y2="290"/><line x1="880" y1="140" x2="786" y2="290"/>
+<line x1="152" y1="104" x2="188" y2="104"/><line x1="188" y1="124" x2="152" y2="124"/>
+<line x1="482" y1="114" x2="518" y2="114"/>
+<line x1="812" y1="114" x2="848" y2="114"/>
+</g>
+<g font-size="26" font-weight="600" text-anchor="middle" fill="#F7F5F0">
+<rect x="30" y="90" width="120" height="48" rx="24" fill="#B34A00"/><text x="90" y="123">SPI1</text>
+<rect x="190" y="90" width="120" height="48" rx="24" fill="#B34A00"/><text x="250" y="123">CEBPB</text>
+<rect x="360" y="90" width="120" height="48" rx="24" fill="#147A5C"/><text x="420" y="123">SPIB</text>
+<rect x="520" y="90" width="120" height="48" rx="24" fill="#147A5C"/><text x="580" y="123">EBF1</text>
+<rect x="690" y="90" width="120" height="48" rx="24" fill="#5E58A0"/><text x="750" y="123">TBX21</text>
+<rect x="850" y="90" width="120" height="48" rx="24" fill="#5E58A0"/><text x="910" y="123">EOMES</text>
+</g>
+<g font-size="26" text-anchor="middle" fill="#1E2433">
+<rect x="50" y="294" width="110" height="44" rx="8" fill="#E3DED3"/><text x="105" y="325">LYZ</text>
+<rect x="180" y="294" width="110" height="44" rx="8" fill="#E3DED3"/><text x="235" y="325">FCN1</text>
+<rect x="380" y="294" width="110" height="44" rx="8" fill="#E3DED3"/><text x="435" y="325">MZB1</text>
+<rect x="510" y="294" width="110" height="44" rx="8" fill="#E3DED3"/><text x="565" y="325">CD24</text>
+<rect x="710" y="294" width="110" height="44" rx="8" fill="#E3DED3"/><text x="765" y="325">NKG7</text>
+<rect x="840" y="294" width="110" height="44" rx="8" fill="#E3DED3"/><text x="895" y="325">GZMB</text>
+</g>
+<text x="500" y="388" font-size="26" text-anchor="middle" fill="#4A5263">● TF · ▭ diana · todas las flechas salen de nuestros regulones</text>
+</svg>
+</div>
+<div class="defs" style="flex:1;">
+<p class="def"><b>Nodo:</b> un gen. Los TF son los nodos de los que salen flechas.</p>
+<p class="def"><b>Arista:</b> una flecha A → B, "A regula a B". Tiene dirección y signo: → activa, ⊣ reprime.</p>
+<p class="def"><b>Regulón:</b> un TF y todas sus flechas de salida. La unidad de pySCENIC.</p>
+</div>
+</div>
+<p class="callout" style="--i:2">Nuestra red inferida: <b>8,929 genes y 46,339 flechas</b>. Es un mapa propuesto, no medido.</p>
+<aside>Minutos 4–6. Una red de regulación génica (GRN) es el mapa de quién regula a quién. Dos ingredientes:
+- Nodos: los genes. Los TF son nodos especiales porque de ellos salen flechas.
+- Aristas: flechas con dirección (A → B no es lo mismo que B → A) y signo (activa o reprime).
+Regulón = un TF con todas sus flechas de salida. Es la palabra que más vamos a usar hoy.
+Las flechas del dibujo son reales, de nuestros regulones: SPI1 ⇄ CEBPB, y los dos → LYZ y FCN1 (monocitos); SPIB → EBF1, y los dos → MZB1 y CD24 (B); TBX21 → EOMES, y los dos → NKG7 y GZMB (NK). Nota que hay flechas entre TF: un TF puede ser diana de otro. Eso hace que sea una red y no una lista.
+Números de nuestra red completa (results/regulons_long.tsv): 272 regulones, 8,929 genes, 46,339 flechas, de ellas 1,579 entre TF. SPI1 es el "hub" más grande, con 3,106 dianas; la mediana de un regulón es 41. Un gen típico recibe flechas de 5 TF: los genes suelen tener varios interruptores.
+Ojo: todas nuestras flechas son de activación. pySCENIC por defecto se queda solo con los regulones (+); las represiones son más difíciles de inferir y no las reporta.
+Remata con el recuadro: esta red la infiere una computadora. Es una hipótesis. Vuelve a esta frase al final (diapositiva 26).</aside>
+</section>

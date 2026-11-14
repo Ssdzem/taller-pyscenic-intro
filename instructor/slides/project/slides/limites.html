@@ -1,0 +1,36 @@
+<section id="limites" class="dark withfoot" data-transition="fade">
+<div class="head">
+<p class="eyebrow">Cierre</p>
+<h2>Qué podemos y qué no podemos concluir</h2>
+</div>
+<div class="row">
+<div class="card" style="--i:0">
+<p class="tag">Sí podemos decir</p>
+<h3>Actividad diferencial</h3>
+<ul class="vs">
+<li>Algunos regulones son más activos en una población: EBF1 en células B y TBX21 en células NK, en las cuatro corridas que probamos.</li>
+<li>Eso coincide con la biología conocida de cada linaje.</li>
+</ul>
+</div>
+<div class="card" style="--i:1">
+<p class="tag">No, sin más evidencia</p>
+<h3>Lo que falta probar</h3>
+<ul class="vs">
+<li>Causalidad: coexpresión + motivo ≠ regulación demostrada.</li>
+<li>Ausencia: PAX5 no tiene regulón, y aun así regula genes B.</li>
+<li>Generalizar: un donante, 900 células, etiquetas inferidas.</li>
+<li>Artefactos: FOS y JUN, genes de estrés.</li>
+<li>Variabilidad: al repetirlo, MAFB desaparece y PAX5 aparece.</li>
+</ul>
+</div>
+</div>
+<p class="foot">Para seguir: pyscenic.readthedocs.io · github.com/aertslab/SCENICprotocol · resources.aertslab.org/cistarget</p>
+<aside>Minutos 108–120. Sección 6 del notebook.
+Lo que SÍ: con los mismos datos, regulones "de libro" salen donde deben: EBF1 en células B y TBX21 en NK aparecen más activos en su población en las cuatro corridas que probamos (servidor, reducida de clase, demo y dataset entero). En monocitos el panorama cambia más entre corridas (MAFB va y viene; FOS es sospechoso de artefacto). Es una validación de sentido común del método.
+Lo que NO, con un ejemplo de hoy para cada punto:
+- Causalidad: RPS4X tenía las asociaciones más fuertes de toda la red y es una proteína ribosomal, no un regulador. No hay ningún motivo anotado para RPS4X, así que cisTarget no puede darle regulón.
+- Ausencia: PAX5 tiene 45 motivos anotados directamente y candidatos B perfectos (IGHM, CD79B, CD40), pero ningún módulo alcanzó el umbral de enriquecimiento (NES ≥ 3). Que no haya regulón no significa que no regule.
+- Artefactos: el regulón FOS(+) contiene FOSB, JUNB, JUND, DUSP1, KLF6 y ZFP36, genes de respuesta temprana.
+- Variabilidad: al repetir el pipeline (corrida reducida de clase y corrida completa para casa), MAFB(+) aparece solo en 2 de 4 corridas (servidor y dataset entero de 10,280 células) y PAX5(+) aparece en una. SCENIC recomienda repetir GRNBoost2 varias veces y quedarse con los regulones que se repiten.
+Cierra volviendo a la diapositiva 3 (qué es una red): regulón = hipótesis. Comparte el enlace del repositorio y avisa que después publicarás las respuestas sugeridas.</aside>
+</section>

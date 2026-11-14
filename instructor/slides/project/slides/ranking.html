@@ -1,0 +1,58 @@
+<section id="ranking" data-transition="fade">
+<div class="head">
+<p class="eyebrow">Paso ② por dentro · 3 de 6 · mientras corre ctx</p>
+<h2>El ranking: ¿las candidatas de SPI1 tienen el motivo?</h2>
+</div>
+<div class="row" style="gap:64px; align-items:center;">
+<div style="display:flex; flex-direction:column; gap:20px; width:640px;">
+<p style="font-size:28px; color:var(--soft);">Candidatas = las 2,694 posibles dianas de SPI1 que dio GRNBoost2.</p>
+<table class="data">
+<tr><th class="n">Lugar</th><th>Gen</th><th>¿Candidata?</th></tr>
+<tr><td class="n">1</td><td>PCSK6-AS1</td><td>no</td></tr>
+<tr class="hl"><td class="n">7</td><td>DENND4B</td><td>sí</td></tr>
+<tr class="hl"><td class="n">100</td><td>CSF1R</td><td>sí</td></tr>
+<tr class="hl"><td class="n">762</td><td>LYZ</td><td>sí</td></tr>
+<tr class="hl"><td class="n">1,320</td><td>S100A8</td><td>sí</td></tr>
+<tr><td class="n">21,861</td><td>CD79A</td><td>no</td></tr>
+</table>
+</div>
+<div class="figure" style="--i:0; width:708px;">
+<svg aria-label="Histograma real: de las 2,600 candidatas de SPI1, 280 caen en el primer bloque de 1,351 lugares del ranking del motivo de PU.1, contra 130 esperadas al azar; los bloques siguientes van bajando." width="660" height="427" viewBox="0 8 760 492" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Sans, Arial, sans-serif">
+<text x="20" y="36" font-size="32" text-anchor="start" fill="#1E2433" font-weight="600">Dónde caen las 2,600 candidatas</text>
+<rect x="93" y="120" width="27" height="280" fill="#B34A00"/>
+<rect x="126" y="199" width="27" height="201" fill="#CFC7B8"/>
+<rect x="159" y="206" width="27" height="194" fill="#CFC7B8"/>
+<rect x="192" y="237" width="27" height="163" fill="#CFC7B8"/>
+<rect x="225" y="270" width="27" height="130" fill="#CFC7B8"/>
+<rect x="258" y="256" width="27" height="144" fill="#CFC7B8"/>
+<rect x="291" y="245" width="27" height="155" fill="#CFC7B8"/>
+<rect x="324" y="275" width="27" height="125" fill="#CFC7B8"/>
+<rect x="357" y="263" width="27" height="137" fill="#CFC7B8"/>
+<rect x="390" y="285" width="27" height="115" fill="#CFC7B8"/>
+<rect x="423" y="271" width="27" height="129" fill="#CFC7B8"/>
+<rect x="456" y="288" width="27" height="112" fill="#CFC7B8"/>
+<rect x="489" y="292" width="27" height="108" fill="#CFC7B8"/>
+<rect x="522" y="298" width="27" height="102" fill="#CFC7B8"/>
+<rect x="555" y="300" width="27" height="100" fill="#CFC7B8"/>
+<rect x="588" y="304" width="27" height="96" fill="#CFC7B8"/>
+<rect x="621" y="319" width="27" height="81" fill="#CFC7B8"/>
+<rect x="654" y="329" width="27" height="71" fill="#CFC7B8"/>
+<rect x="687" y="322" width="27" height="78" fill="#CFC7B8"/>
+<rect x="720" y="321" width="27" height="79" fill="#CFC7B8"/>
+<line x1="90" y1="400" x2="750" y2="400" stroke="#1E2433" stroke-width="3"/>
+<line x1="90" y1="270" x2="750" y2="270" stroke="#1E2433" stroke-width="3" stroke-dasharray="10 8"/>
+<text x="750" y="257.97593929298534" font-size="30" text-anchor="end" fill="#1E2433" font-weight="600">al azar: 130</text>
+<text x="106.5" y="108" font-size="32" text-anchor="middle" fill="#B34A00" font-weight="700">280</text>
+<text x="90" y="438" font-size="28" text-anchor="start" fill="#4A5263">1</text>
+<text x="750" y="438" font-size="28" text-anchor="end" fill="#4A5263">27,015</text>
+<text x="420" y="480" font-size="28" text-anchor="middle" fill="#4A5263">lugar en el ranking de PU.1 (bloques de 1,351)</text>
+</svg>
+</div>
+</div>
+<p class="callout" style="--i:2">En el primer 5 % del ranking (1,351 genes) caen <b>280</b> candidatas. Al azar esperaríamos 130.</p>
+<aside>Minutos 50–52. Ya lanzaron ctx (~5 min). Todo es real: base del promotor, motivo de PU.1 (grupo de motivos metacluster_167.5, anotado directamente a SPI1).
+Primero, las candidatas: de la tabla de GRNBoost2, pySCENIC arma para cada TF seis grupos ("módulos"). Este es uno: los pares SPI1 → gen con importancia en el 10 % más alto de toda la tabla y correlación positiva. Son 2,694 genes; 2,600 están en la base. Los otros cinco grupos: importancia en el 25 % más alto, las 50 mejores dianas del TF, y los genes donde el TF está entre sus 5, 10 o 50 mejores predictores.
+La tabla de la izquierda es el ranking del motivo de PU.1 (los 27,015 genes). Los primeros lugares no son candidatas (el motivo está en muchos genes que SPI1 no regula aquí). Pero CSF1R (lugar 100), LYZ (762) y S100A8 (1,320), genes de monocito, son candidatas y están arriba. CD79A, gen de células B, está casi al final (21,861) y no es candidata (su correlación con SPI1 es negativa).
+Histograma: las candidatas se amontonan al principio del ranking: 280 en el primer bloque contra 130 esperadas si estuvieran repartidas al azar. Más del doble.
+Pregunta al grupo: si SPI1 de verdad regula a estas candidatas, ¿qué esperarían ver? (que tengan su motivo → que queden arriba).</aside>
+</section>

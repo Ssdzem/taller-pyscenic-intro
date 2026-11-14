@@ -1,0 +1,32 @@
+<section id="pasos" data-transition="fade">
+<div class="head">
+<p class="eyebrow">El método</p>
+<h2>pySCENIC en tres pasos</h2>
+</div>
+<div class="row">
+<div class="card mono" style="--i:0">
+<p class="tag">① GRNBoost2</p>
+<p class="body">¿Qué genes se <b>coexpresan</b> con cada TF?</p>
+<p class="big">2,339,328</p>
+<p class="small">asociaciones TF–gen, de 1,018 TF</p>
+</div>
+<div class="arrowcell"><x-shape kind="arrow-right"></x-shape></div>
+<div class="card b" style="--i:1">
+<p class="tag">② cisTarget</p>
+<p class="body">¿Esas dianas tienen el <b>motivo de unión</b> del TF en su ADN?</p>
+<p class="big">272</p>
+<p class="small">regulones sobreviven a la poda</p>
+</div>
+<div class="arrowcell"><x-shape kind="arrow-right"></x-shape></div>
+<div class="card nk" style="--i:2">
+<p class="tag">③ AUCell</p>
+<p class="body">¿Qué tan <b>activo</b> está cada regulón en cada célula?</p>
+<p class="big">900 × 272</p>
+<p class="small">matriz de actividad: células × regulones</p>
+</div>
+</div>
+<p class="lede">Entrada: matriz de expresión de 900 células × 10,120 genes. Cada paso filtra: muchos candidatos, pocos genes con doble evidencia.</p>
+<aside>Minutos 14–16. El mapa del taller: cada tarjeta es un ejercicio del notebook y cada una tendrá su diapositiva "por dentro" cuando lleguemos.
+Lee las tres preguntas en voz alta: ¿qué genes van con cada TF? ¿tienen su motivo? ¿qué tan activo está cada regulón en cada célula? Y los números: 2.3 millones de pares → 272 regulones → una matriz de 900 × 272. Cada paso filtra.
+Los números son del servidor (20 núcleos, ~7 min para los pasos 1 y 2). Hoy cada uno corre una versión reducida (2,829 genes y una sola base de ranking): grn ~2 min, ctx ~5 min, aucell ~10 s. Las esperas de grn y ctx son el momento de explicar cada paso por dentro.</aside>
+</section>

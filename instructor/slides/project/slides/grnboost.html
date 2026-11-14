@@ -1,0 +1,32 @@
+<section id="grnboost" data-transition="fade">
+<div class="head">
+<p class="eyebrow">Paso ① por dentro · 6 de 6 · la tabla de adyacencias</p>
+<h2>El resultado: ¿quién predice a quién?</h2>
+</div>
+<div class="row" style="gap:56px; align-items:flex-start;">
+<div style="flex:1;">
+<table class="data">
+<tr><th>Gen</th><th>TF que más lo predice</th><th class="n">Import.</th><th class="n">ρ</th></tr>
+<tr><td>NKG7</td><td class="tf">TBX21</td><td class="n">66.1</td><td class="n">+0.73</td></tr>
+<tr><td>NKG7</td><td class="tf">RORA</td><td class="n">49.2</td><td class="n">+0.67</td></tr>
+<tr><td>NKG7</td><td class="tf">MYBL1</td><td class="n">37.4</td><td class="n">+0.60</td></tr>
+<tr class="hl"><td>CD79A</td><td>ANXA1</td><td class="n">45.1</td><td class="n neg">−0.73</td></tr>
+<tr class="hl"><td>CD79A</td><td>CEBPD</td><td class="n">33.2</td><td class="n neg">−0.65</td></tr>
+<tr><td>CD79A</td><td class="tf">SPIB</td><td class="n">27.6</td><td class="n">+0.65</td></tr>
+</table>
+</div>
+<div class="card" style="--i:1; flex:0 0 560px;">
+<p class="tag">¿Por qué ANXA1?</p>
+<p class="txt">ANXA1 está en el 98 % de los monocitos y solo en el 13 % de las células B.</p>
+<p class="txt">Si falta ANXA1, probablemente es una B y hay CD79A. Predice por <b>ausencia</b>.</p>
+<p class="txt">ρ = correlación, calculada aparte: GRNBoost2 no la da.</p>
+</div>
+</div>
+<p class="callout" style="--i:2">La importancia <b>no tiene signo</b>: un TF puede predecir a un gen porque falta donde el gen está.</p>
+<aside>Minutos 33–35. La tabla es real (servidor, 900 células). ρ = correlación de Spearman sobre log(CP10k), calculada aparte; GRNBoost2 no la reporta.
+- NKG7 (gen de citotoxicidad NK): sus mejores predictores son TBX21, RORA y MYBL1, todos con correlación positiva. Tiene sentido.
+- CD79A (gen de células B): el mejor predictor es ANXA1, con correlación NEGATIVA. ANXA1 está en 98 % de los monocitos y solo en 13 % de las B: su AUSENCIA predice CD79A. Lo mismo CEBPD (un TF de monocitos).
+- En el árbol real de una sola pregunta para CD79A, la pregunta ganadora es "¿ANXA1 ≥ 2 UMI?": del lado "no" quedan 294 de las 300 B.
+Moraleja: importancia ≠ activación ≠ causalidad. cisTarget separa dianas con correlación positiva (regulones "+") y exige el motivo. ANXA1 no tiene ningún motivo anotado, así que nunca tendrá regulón.
+Luego regresan al notebook: comparan su tabla con la del servidor (pregunta del top 15 de TBX21).</aside>
+</section>

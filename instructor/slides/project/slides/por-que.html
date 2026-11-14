@@ -1,0 +1,20 @@
+<section id="por-que" class="withfoot" data-transition="fade">
+<div class="head">
+<p class="eyebrow">Teoría · 6</p>
+<h2>¿Por qué pySCENIC?</h2>
+</div>
+<table class="data" style="font-size:28px;">
+<tr><th style="width:24%">Enfoque</th><th style="width:40%">Qué te dice</th><th style="width:36%">Qué le falta</th></tr>
+<tr><td class="tf">Expresión diferencial</td><td>Qué genes cambian entre poblaciones</td><td>Quién los controla</td></tr>
+<tr><td class="tf">Coexpresión</td><td>Qué genes suben y bajan juntos</td><td>Dirección, signo y si es directa: hay miles de pares indirectos</td></tr>
+<tr class="hl"><td>pySCENIC</td><td>Coexpresión + el motivo del TF en el ADN de la diana + la actividad de cada regulón en cada célula</td><td>Sigue siendo una hipótesis: no demuestra causalidad</td></tr>
+</table>
+<p class="callout" style="--i:1">Extra: mide la actividad aunque el TF casi no se detecte. El gen EBF1 aparece en solo <b>31 %</b> de las células B, pero su regulón está activo en <b>86 %</b> (259 de 300).</p>
+<p class="foot">SCENIC: Aibar et al., 2017, Nature Methods · pySCENIC: Van de Sande et al., 2020, Nature Protocols</p>
+<aside>Minutos 12–14. ¿Por qué no basta con lo que ya conocen?
+- Expresión diferencial: dice QUÉ genes cambian (LYZ alto en monocitos), pero no quién los enciende.
+- Coexpresión/correlación: dice qué genes van juntos, pero hay millones de pares, muchos indirectos (A sube B, B sube C → A "correlaciona" con C), y sin dirección ni signo.
+- pySCENIC exige dos evidencias independientes: coexpresión en los datos Y que la diana tenga en su ADN el motivo de unión del TF. Luego mide qué tan activo está cada regulón en cada célula.
+Ventajas prácticas: solo necesita la matriz de scRNA-seq y bases públicas; la actividad por regulón es más robusta que mirar un gen suelto, porque muchas dianas compensan los ceros técnicos (dropouts). Ejemplo del recuadro, con nuestros datos: el gen EBF1 se detecta en 31 % de las células B, pero EBF1(+) tiene AUC > 0 en 259 de 300 (86 %).
+pySCENIC es la versión en Python de SCENIC (Aibar et al. 2017); usamos la 0.12.1.</aside>
+</section>

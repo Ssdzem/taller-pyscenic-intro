@@ -1,0 +1,72 @@
+{
+  "v": 5,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-11-12T18:00:00Z"
+  },
+  "lists": "css",
+  "format": {
+    "v": 1,
+    "shared": [
+      "project/deck.css"
+    ]
+  },
+  "title": "Taller pySCENIC 2h",
+  "order": [
+    "cover",
+    "grn",
+    "red",
+    "circuitos",
+    "estados",
+    "para-que",
+    "por-que",
+    "pasos",
+    "colab",
+    "arbol",
+    "corte",
+    "arbol3",
+    "boosting",
+    "importancia",
+    "grnboost",
+    "motivo",
+    "bases",
+    "ranking",
+    "curva",
+    "nes",
+    "podacurva",
+    "poda",
+    "aucell",
+    "protagonistas",
+    "parejas",
+    "limites"
+  ],
+  "sections": {
+    "s1": {
+      "description": "Teoría: un gen y su interruptor, qué es una red de regulación génica, circuitos que se repiten, tipos celulares como estados estables, para qué sirve, por qué pySCENIC y el método en tres pasos (min 0–16)",
+      "start": "cover"
+    },
+    "s2": {
+      "description": "Práctica: abrir Colab y, en cada paso, ir y venir entre el notebook y la explicación por dentro: GRNBoost2 (un corte en la recta, dónde cortar, árbol de 3 niveles, boosting, importancia), cisTarget (motivo, bases, ranking, curva y AUC, NES, poda) y AUCell (min 16–86)",
+      "start": "colab"
+    },
+    "s3": {
+      "description": "Cierre: biología de los TF protagonistas, hipótesis en parejas y qué se puede concluir (min 86–120)",
+      "start": "protagonistas"
+    }
+  },
+  "faces": {
+    "space-grotesk": {
+      "family": "Space Grotesk",
+      "href": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&display=swap"
+    },
+    "ibm-plex-sans": {
+      "family": "IBM Plex Sans",
+      "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&display=swap"
+    },
+    "ibm-plex-mono": {
+      "family": "IBM Plex Mono",
+      "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap"
+    }
+  },
+  "designSystems": []
+}

@@ -1,0 +1,45 @@
+<section id="estados" data-transition="fade">
+<div class="head">
+<p class="eyebrow">Teoría · 4 · dinámica</p>
+<h2>Cada tipo celular es un estado estable de la red</h2>
+</div>
+<div class="row" style="align-items:center; gap:56px;">
+<div class="figure" style="--i:0; width:908px;">
+<svg aria-label="Un paisaje con tres valles: monocito, célula B y célula NK, cada uno con una bolita y sus TF. Una flecha punteada saca a la bolita del valle B y la lleva al valle de los monocitos: C/EBPα forzado convierte una célula B en macrófago." width="860" height="459" viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Sans, Arial, sans-serif">
+<defs><marker id="eda" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1E2433"/></marker></defs>
+<path d="M20,150 C80,150 100,360 170,360 C240,360 250,210 310,210 C370,210 380,360 450,360 C520,360 530,210 590,210 C650,210 660,360 730,360 C800,360 820,150 880,150 L880,380 L20,380 Z" fill="#E3DED3"/>
+<path d="M20,150 C80,150 100,360 170,360 C240,360 250,210 310,210 C370,210 380,360 450,360 C520,360 530,210 590,210 C650,210 660,360 730,360 C800,360 820,150 880,150" fill="none" stroke="#1E2433" stroke-width="4"/>
+<circle cx="170" cy="334" r="26" fill="#B34A00"/>
+<circle cx="450" cy="334" r="26" fill="#147A5C"/>
+<circle cx="730" cy="334" r="26" fill="#5E58A0"/>
+<path d="M440,300 C420,120 220,120 182,296" fill="none" stroke="#1E2433" stroke-width="3" stroke-dasharray="10 8" marker-end="url(#eda)"/>
+<text x="310" y="104" font-size="26" text-anchor="middle" fill="#1E2433" font-weight="600">C/EBPα forzado</text>
+<g font-size="28" font-weight="600" text-anchor="middle">
+<text x="170" y="424" fill="#B34A00">Monocito</text>
+<text x="450" y="424" fill="#147A5C">Célula B</text>
+<text x="730" y="424" fill="#5E58A0">Célula NK</text>
+</g>
+<g font-size="26" text-anchor="middle" fill="#4A5263">
+<text x="170" y="464">SPI1 · CEBPB</text>
+<text x="450" y="464">SPIB · EBF1</text>
+<text x="730" y="464">TBX21 · EOMES</text>
+</g>
+<text x="20" y="40" font-size="26" fill="#4A5263">esquema · cada valle es una combinación estable de TF</text>
+</svg>
+</div>
+<ol class="steplist" style="flex:1;">
+<li>Los bucles que se activan entre sí mantienen encendido el programa de un linaje.</li>
+<li>Los que se reprimen apagan el programa de los otros linajes.</li>
+<li>Quedan pocos estados estables, los <b>valles</b>: cada uno es un tipo celular.</li>
+<li>Para cambiar de valle hay que empujar un TF clave: con C/EBPα forzado, una célula B se vuelve macrófago.</li>
+</ol>
+</div>
+<p class="callout" style="--i:2">Por eso esperamos <b>regulones distintos activos en cada población</b>: es lo que mediremos.</p>
+<aside>Minutos 8–10. La red no es un dibujo estático: los TF se encienden y apagan unos a otros. Con los circuitos de la diapositiva anterior, el sistema termina en unas pocas combinaciones estables de TF encendidos. En el lenguaje de sistemas dinámicos se llaman atractores; la imagen clásica es el "paisaje epigenético" de Waddington (1957): la célula es una bolita que rueda hasta un valle.
+1) Bucles positivos (SPI1 ⇄ CEBPB en nuestros regulones) mantienen encendido el programa mieloide.
+2) Represión cruzada entre linajes: por ejemplo PAX5 reprime genes mieloides en las células B; sin PAX5, células pro-B pueden volverse macrófagos (Nutt et al. 1999, Nature). Recuerda: pySCENIC no reporta estas flechas (−).
+3) Resultado: los tipos celulares son los valles. Por eso un monocito no se vuelve célula B por accidente.
+4) La prueba de que la red manda: Xie et al. 2004 (Cell) forzaron C/EBPα (o C/EBPβ) en células B y las convirtieron en macrófagos, que vienen de monocitos. Es la flecha punteada. Yamanaka (siguiente diapositiva) es lo mismo con 4 TF.
+Los TF de cada valle son los que veremos activos en nuestros datos (mediana del AUC por población, results/auc_median_by_population.csv): CEBPB(+) 0.066 en monocitos vs 0.039 en B; EBF1(+) 0.049 en B y 0 en monocitos y NK; EOMES(+) 0.073 en NK vs 0.019 en B y 0.015 en monocitos.
+El paisaje es un esquema, no datos.</aside>
+</section>

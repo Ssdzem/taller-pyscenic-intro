@@ -1,0 +1,34 @@
+<section id="parejas" data-transition="fade">
+<div class="head">
+<p class="eyebrow">Ejercicio final · en parejas · 17 min</p>
+<h2>Propongan una hipótesis con un regulón</h2>
+</div>
+<p class="lede">Elijan un regulón, ejecuten ficha() y separen la evidencia en dos columnas:</p>
+<div class="row">
+<div class="card b" style="--i:0">
+<p class="tag">Observado</p>
+<h3>Medido en los datos</h3>
+<ul class="vs">
+<li>Conteos de cada gen en cada célula</li>
+<li>Si el TF se expresa, y en cuántas células</li>
+<li>Diferencias de expresión entre poblaciones</li>
+</ul>
+</div>
+<div class="card mono" style="--i:1">
+<p class="tag">Inferido</p>
+<h3>Lo propone un algoritmo</h3>
+<ul class="vs">
+<li>Asociación TF–gen (GRNBoost2)</li>
+<li>Qué genes forman el regulón (cisTarget)</li>
+<li>Actividad AUC: se mide sobre un regulón inferido</li>
+<li>Etiquetas de población (marcadores + CellTypist)</li>
+</ul>
+</div>
+</div>
+<aside>Minutos 91–108. Sección 5 del notebook. Usen la diapositiva anterior (los protagonistas) como guía de qué esperar. Formen parejas; cada pareja elige UN regulón de la tabla de "más específicos" (o EBF1, que ya viene escrito), ejecuta ficha() y llena la plantilla con doble clic.
+Lo que más cuesta es separar observado de inferido. Pistas para circular entre parejas:
+- La expresión del TF es observada (conteos). La actividad AUC NO es puramente observada: se calcula con datos medidos, pero sobre un conjunto de genes que propuso el algoritmo.
+- Las etiquetas Mono/B/NK también son inferidas: las asignamos nosotros con marcadores y CellTypist.
+- Buen ejemplo de "TF ausente, regulón activo": EBF1 no se detecta en el 69 % de las células B (206 de 300), pero 173 de esas 206 tienen AUC > 0 para EBF1(+). AUCell mira las dianas, no solo al TF.
+Últimos 5 minutos: dos o tres parejas leen su hipótesis en voz alta. Respuestas guía en SOLUCIONES.md.</aside>
+</section>

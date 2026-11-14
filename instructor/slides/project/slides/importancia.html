@@ -1,0 +1,49 @@
+<section id="importancia" data-transition="fade">
+<div class="head">
+<p class="eyebrow">Paso ① por dentro · 5 de 6</p>
+<h2>Importancia = suma de lo que baja el error</h2>
+</div>
+<div class="row" style="gap:56px; align-items:center;">
+<div class="figure" style="--i:0; width:768px;">
+<svg aria-label="Tabla real: en el modelo de NKG7, TBX21 se usa en 105 de 482 árboles. Bajas del error en los primeros: árbol 1: 7.7, árbol 4: 147.1, árbol 5: 7.5, árbol 8: 20.0; el último, árbol 466: 0.5. Suma: 1,802. Dividida entre lo que baja un árbol promedio, 27.3, da la importancia 66.1." width="720" height="452" viewBox="0 0 720 452" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Sans, Arial, sans-serif">
+<text x="20" y="44" font-size="28" text-anchor="start" fill="#4A5263" font-weight="600">Árbol</text>
+<text x="700" y="44" font-size="28" text-anchor="end" fill="#4A5263" font-weight="600">Baja del error con TBX21</text>
+<line x1="20" y1="60" x2="700" y2="60" stroke="#1E2433" stroke-width="2"/>
+<rect x="10" y="73" width="700" height="42" rx="6" fill="#CFC7B8" fill-opacity="0.35"/>
+<text x="20" y="104" font-size="28" text-anchor="start" fill="#1E2433">1</text>
+<text x="700" y="104" font-size="28" text-anchor="end" fill="#1E2433">7.7</text>
+<text x="20" y="146" font-size="28" text-anchor="start" fill="#1E2433">4</text>
+<text x="700" y="146" font-size="28" text-anchor="end" fill="#1E2433">147.1</text>
+<rect x="10" y="157" width="700" height="42" rx="6" fill="#CFC7B8" fill-opacity="0.35"/>
+<text x="20" y="188" font-size="28" text-anchor="start" fill="#1E2433">5</text>
+<text x="700" y="188" font-size="28" text-anchor="end" fill="#1E2433">7.5</text>
+<text x="20" y="230" font-size="28" text-anchor="start" fill="#1E2433">8</text>
+<text x="700" y="230" font-size="28" text-anchor="end" fill="#1E2433">20.0</text>
+<text x="20" y="272" font-size="28" text-anchor="start" fill="#4A5263">… 100 árboles más …</text>
+<text x="20" y="314" font-size="28" text-anchor="start" fill="#1E2433">466</text>
+<text x="700" y="314" font-size="28" text-anchor="end" fill="#1E2433">0.5</text>
+<line x1="20" y1="332" x2="700" y2="332" stroke="#1E2433" stroke-width="2"/>
+<rect x="10" y="336" width="700" height="52" rx="8" fill="#5E58A0"/>
+<text x="30" y="372" font-size="30" text-anchor="start" fill="#F7F5F0" font-weight="600">Suma (105 árboles)</text>
+<text x="690" y="372" font-size="30" text-anchor="end" fill="#F7F5F0" font-weight="600">1,802</text>
+<text x="20" y="432" font-size="30" text-anchor="start" fill="#1E2433" font-weight="600">Importancia = 1,802 ÷ 27.3</text>
+<text x="700" y="432" font-size="30" text-anchor="end" fill="#5E58A0" font-weight="600">66.1</text>
+</svg>
+</div>
+<ol class="steplist" style="flex:1;">
+<li>Cada pregunta de un árbol baja el error. Esa baja se le apunta al TF de la pregunta.</li>
+<li>Se suman las bajas de cada TF en todos los árboles. TBX21: <b>1,802</b>.</li>
+<li>Para tener números chicos se divide entre lo que baja un árbol promedio: TBX21 = <b>66.1</b>.</li>
+<li>Igual con cada TF: RORA 1,341 → 49.2; MYBL1 1,019 → 37.4.</li>
+</ol>
+</div>
+<p class="callout" style="--i:2">Importancia alta = <b>ayuda mucho a predecir</b>. Aún no sabemos si lo activa, lo reprime o solo coincide.</p>
+<aside>Minutos 31–33. Así nace el número de la tabla de adyacencias. La importancia es la suma, en todos los árboles, de cuánto baja el error cada vez que se pregunta por ese TF.
+La "baja del error" de una pregunta: error cuadrático del grupo antes de partirlo menos el de los dos lados después, ponderado por la fracción de células que llegan a esa pregunta (es la importancia por impureza de sklearn; cada árbol mide su error sobre el residuo que está aprendiendo). Unidades: UMI².
+Tabla real (modelo de NKG7, semilla 2026, instructor/slides/datos/importancia_tabla.log): TBX21 aparece en 105 de 482 árboles. Las bajas grandes vienen al principio (árbol 4: 147.1), cuando el residuo todavía es grande; al final son chicas (árbol 466: 0.5). Suma: 1802.34.
+El último paso es solo escala: arboreto (el paquete detrás de GRNBoost2) divide entre la baja total de todos los TF (13,144) y multiplica por el número de árboles (482). Es lo mismo que dividir entre lo que baja un árbol promedio (27.27): 1802.3 ÷ 27.27 = 66.09. Por eso las importancias de un gen suman 482, su número de árboles. El orden de los TF no cambia.
+Los 8 primeros de NKG7 (suma → importancia): TBX21 1802 → 66.1; RORA 1341 → 49.2; MYBL1 1019 → 37.4; KLRG1 999 → 36.6; MEF2C 822 → 30.1; STAT4 561 → 20.6; SPI1 559 → 20.5; ID2 424 → 15.5.
+Comprobación: reentrenamos el modelo de NKG7 con la semilla del servidor (2026) y salieron exactamente los mismos valores de adjacencies.tsv (TBX21 66.09, RORA 49.18, MYBL1 37.38…); la suma ÷ 27.27 reproduce las 8 importancias (diferencia máxima 7e-15). La tabla no es una caja negra.
+Ojo con SPI1 en el lugar 7 (559 → 20.5): SPI1 casi no está en las NK; su AUSENCIA ayuda a predecir NKG7. Es el puente a la siguiente slide.
+Se repite para los 10,120 genes: 2,339,328 filas TF – gen – importancia. Consecuencia: los genes con muchos árboles (fáciles de predecir y con mucha variación) tienen importancias más grandes. Por eso pySCENIC usa percentiles y rankings en vez de un corte fijo.</aside>
+</section>

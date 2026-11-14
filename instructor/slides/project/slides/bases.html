@@ -1,0 +1,52 @@
+<section id="bases" data-transition="fade">
+<div class="head">
+<p class="eyebrow">Paso ② por dentro · 2 de 6</p>
+<h2>Las bases: el genoma ya escaneado</h2>
+</div>
+<div class="row" style="gap:56px; align-items:center;">
+<div class="figure" style="--i:0; width:888px;">
+<svg aria-label="Arriba, un gen con dos ventanas de búsqueda: el promotor, de 500 pares de bases antes a 100 después del inicio, y una ventana amplia de 10 kb a cada lado. Abajo, posiciones reales en la base: con el motivo de PU.1, CSF1R está en el lugar 100, LYZ en el 762 y CD79A en el 21,861." width="840" height="454" viewBox="0 0 900 486" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Sans, Arial, sans-serif">
+<rect x="120" y="14" width="700" height="18" rx="9" fill="#B9B4E6"/>
+<text x="470" y="66" font-size="28" text-anchor="middle" fill="#5E58A0" font-weight="600">ventana amplia: 10 kb a cada lado del inicio</text>
+<path d="M470,128 L470,104 L520,104" fill="none" stroke="#1E2433" stroke-width="3"/>
+<path d="M514,97 L526,104 L514,111 z" fill="#1E2433"/>
+<text x="535" y="113" font-size="26" text-anchor="start" fill="#1E2433">inicio</text>
+<line x1="20" y1="150" x2="880" y2="150" stroke="#1E2433" stroke-width="4"/>
+<rect x="470" y="128" width="360" height="44" rx="8" fill="#7FCDB2"/>
+<text x="650" y="159" font-size="28" text-anchor="middle" fill="#1E2433" font-weight="600">gen</text>
+<rect x="420" y="182" width="66" height="18" rx="9" fill="#B34A00"/>
+<text x="453" y="234" font-size="28" text-anchor="middle" fill="#B34A00" font-weight="600">promotor: 500 pb antes y 100 pb después del inicio</text>
+<line x1="20" y1="262" x2="880" y2="262" stroke="#CFC7B8" stroke-width="2" stroke-dasharray="6 6"/>
+<text x="20" y="300" font-size="28" text-anchor="start" fill="#4A5263" font-weight="600">La base: lugar de cada gen en el ranking de cada motivo</text>
+<text x="470" y="344" font-size="28" text-anchor="middle" fill="#1E2433" font-weight="600">CSF1R</text>
+<text x="620" y="344" font-size="28" text-anchor="middle" fill="#1E2433" font-weight="600">LYZ</text>
+<text x="770" y="344" font-size="28" text-anchor="middle" fill="#1E2433" font-weight="600">CD79A</text>
+<line x1="20" y1="358" x2="880" y2="358" stroke="#CFC7B8" stroke-width="2"/>
+<text x="20" y="396" font-size="28" text-anchor="start" fill="#1E2433">motivo de PU.1</text>
+<text x="470" y="396" font-size="28" text-anchor="middle" fill="#1E2433" font-family="IBM Plex Mono, Courier New, monospace">100</text>
+<text x="620" y="396" font-size="28" text-anchor="middle" fill="#1E2433" font-family="IBM Plex Mono, Courier New, monospace">762</text>
+<text x="770" y="396" font-size="28" text-anchor="middle" fill="#1E2433" font-family="IBM Plex Mono, Courier New, monospace">21,861</text>
+<text x="20" y="438" font-size="28" text-anchor="start" fill="#1E2433">un motivo de EBF1</text>
+<text x="470" y="438" font-size="28" text-anchor="middle" fill="#1E2433" font-family="IBM Plex Mono, Courier New, monospace">200</text>
+<text x="620" y="438" font-size="28" text-anchor="middle" fill="#1E2433" font-family="IBM Plex Mono, Courier New, monospace">6,586</text>
+<text x="770" y="438" font-size="28" text-anchor="middle" fill="#1E2433" font-family="IBM Plex Mono, Courier New, monospace">10,248</text>
+<text x="20" y="476" font-size="26" text-anchor="start" fill="#4A5263">… 5,876 motivos × 27,015 genes · dibujo de arriba no a escala</text>
+</svg>
+</div>
+<ol class="steplist" style="flex:1;">
+<li>Alguien ya buscó cada motivo cerca de cada gen humano. Nosotros solo bajamos el resultado (313 MB).</li>
+<li>¿Qué tan cerca? Dos bases: el <b>promotor</b> o una <b>ventana amplia</b> de 10 kb a cada lado.</li>
+<li>Por motivo, los 27,015 genes quedan ordenados del que mejor tiene el motivo al que peor: un <b>ranking</b>.</li>
+<li>Otra tabla dice de qué TF es cada motivo (1,605 TF en total).</li>
+</ol>
+</div>
+<p class="callout" style="--i:2">En clase usamos solo la base del <b>promotor</b>; la de 10 kb queda para casa.</p>
+<aside>Minutos 46–48. Esta es la base que acaban de bajar. Al terminar la slide, lanzan ctx (48–50).
+Quién la hizo: el laboratorio de Stein Aerts. Para cada motivo calificaron qué tan bien (y cuántas veces) aparece cerca de cada gen humano, con el programa Cluster-Buster, y convirtieron la calificación en un ranking. Hacerlo en clase tomaría días.
+Dos ventanas: el promotor (archivo hg38_500bp_up_100bp_down…) y una ventana amplia de 10 kb a cada lado (hg38_10kbp_up_10kbp_down…), que atrapa también regiones reguladoras cercanas. Cada base pesa ~310 MB.
+La tabla de abajo son posiciones reales del archivo del promotor (1 = el gen que mejor tiene el motivo):
+- Motivo de PU.1: CSF1R en el lugar 100 (CSF1R es una diana clásica de PU.1: Zhang et al. 1994, Mol Cell Biol), LYZ en el 762, CD79A (gen de células B) en el 21,861.
+- Un motivo que la tabla asigna a EBF1 (tfdimers__MD00215): CSF1R 200, LYZ 6,586, CD79A 10,248.
+Mismo gen, distinta posición según el motivo: cada motivo tiene su propio ranking.
+Tabla de anotación (archivo .tbl): traduce motivo → TF, directamente (experimento con ese TF), por parecido con otro motivo, o por ortología con ratón.</aside>
+</section>

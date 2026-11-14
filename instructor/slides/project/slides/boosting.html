@@ -1,0 +1,69 @@
+<section id="boosting" data-transition="fade">
+<div class="head">
+<p class="eyebrow">Paso ① por dentro · 4 de 6</p>
+<h2>Boosting: muchos árboles pequeños que se corrigen</h2>
+</div>
+<div class="row" style="gap:56px; align-items:center;">
+<div class="figure" style="--i:0; width:848px;">
+<svg aria-label="Predicción real de NKG7 para dos células conforme se suman árboles: una célula NK con 38 UMI sube de 11.0 a 32.9; un monocito con 0 baja de 11.0 a 0.2." width="800" height="428" viewBox="0 50 860 460" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Sans, Arial, sans-serif">
+<line x1="120" y1="420" x2="830" y2="420" stroke="#1E2433" stroke-width="3"/>
+<line x1="120" y1="420" x2="120" y2="60" stroke="#1E2433" stroke-width="3"/>
+<text x="106" y="429.0" font-size="26" text-anchor="end" fill="#4A5263">0</text>
+<text x="106" y="344.0" font-size="26" text-anchor="end" fill="#4A5263">10</text>
+<line x1="120" y1="335.0" x2="820" y2="335.0" stroke="#CFC7B8" stroke-width="1.5"/>
+<text x="106" y="259.0" font-size="26" text-anchor="end" fill="#4A5263">20</text>
+<line x1="120" y1="250.0" x2="820" y2="250.0" stroke="#CFC7B8" stroke-width="1.5"/>
+<text x="106" y="174.0" font-size="26" text-anchor="end" fill="#4A5263">30</text>
+<line x1="120" y1="165.0" x2="820" y2="165.0" stroke="#CFC7B8" stroke-width="1.5"/>
+<text x="106" y="89.0" font-size="26" text-anchor="end" fill="#4A5263">40</text>
+<line x1="120" y1="80.0" x2="820" y2="80.0" stroke="#CFC7B8" stroke-width="1.5"/>
+<text x="120.0" y="456" font-size="26" text-anchor="middle" fill="#4A5263">0</text>
+<text x="265.2282157676349" y="456" font-size="26" text-anchor="middle" fill="#4A5263">100</text>
+<text x="410.4564315352697" y="456" font-size="26" text-anchor="middle" fill="#4A5263">200</text>
+<text x="555.6846473029045" y="456" font-size="26" text-anchor="middle" fill="#4A5263">300</text>
+<text x="700.9128630705394" y="456" font-size="26" text-anchor="middle" fill="#4A5263">400</text>
+<text x="820.0" y="456" font-size="26" text-anchor="middle" fill="#4A5263">482</text>
+<text x="470.0" y="494" font-size="28" text-anchor="middle" fill="#4A5263">número de árboles →</text>
+<text x="40" y="240" font-size="28" text-anchor="middle" fill="#4A5263" transform="rotate(-90 40 240)">NKG7 predicho (UMI)</text>
+<line x1="120" y1="97.0" x2="820" y2="97.0" stroke="#5E58A0" stroke-width="3" stroke-dasharray="10 8"/>
+<text x="132" y="85.0" font-size="28" text-anchor="start" fill="#5E58A0" font-weight="600">valor real de la célula NK: 38</text>
+<path d="M120.0,326.7 L121.5,324.8 L134.5,310.2 L192.6,259.8 L265.2,217.3 L410.5,172.9 L555.7,155.2 L700.9,145.7 L820.0,140.2" fill="none" stroke="#5E58A0" stroke-width="5"/>
+<circle cx="120.0" cy="326.7" r="6" fill="#5E58A0"/>
+<circle cx="121.5" cy="324.8" r="6" fill="#5E58A0"/>
+<circle cx="134.5" cy="310.2" r="6" fill="#5E58A0"/>
+<circle cx="192.6" cy="259.8" r="6" fill="#5E58A0"/>
+<circle cx="265.2" cy="217.3" r="6" fill="#5E58A0"/>
+<circle cx="410.5" cy="172.9" r="6" fill="#5E58A0"/>
+<circle cx="555.7" cy="155.2" r="6" fill="#5E58A0"/>
+<circle cx="700.9" cy="145.7" r="6" fill="#5E58A0"/>
+<circle cx="820.0" cy="140.2" r="6" fill="#5E58A0"/>
+<path d="M120.0,326.7 L121.5,326.1 L134.5,333.6 L192.6,355.0 L265.2,375.6 L410.5,399.5 L555.7,411.0 L700.9,416.4 L820.0,418.3" fill="none" stroke="#B34A00" stroke-width="5"/>
+<circle cx="120.0" cy="326.7" r="6" fill="#B34A00"/>
+<circle cx="121.5" cy="326.1" r="6" fill="#B34A00"/>
+<circle cx="134.5" cy="333.6" r="6" fill="#B34A00"/>
+<circle cx="192.6" cy="355.0" r="6" fill="#B34A00"/>
+<circle cx="265.2" cy="375.6" r="6" fill="#B34A00"/>
+<circle cx="410.5" cy="399.5" r="6" fill="#B34A00"/>
+<circle cx="555.7" cy="411.0" r="6" fill="#B34A00"/>
+<circle cx="700.9" cy="416.4" r="6" fill="#B34A00"/>
+<circle cx="820.0" cy="418.3" r="6" fill="#B34A00"/>
+<text x="820.0" y="180.18" font-size="28" text-anchor="end" fill="#5E58A0" font-weight="600">célula NK: 32.9</text>
+<text x="483.07053941908714" y="377.515" font-size="28" text-anchor="start" fill="#B34A00" font-weight="600">monocito (real: 0): 0.2</text>
+</svg>
+</div>
+<ol class="steplist" style="flex:1;">
+<li>Se empieza con el promedio: 11.0 para todas las células.</li>
+<li>Desde el primer árbol, cada árbol predice el <b>residuo</b> (real − predicción) y la predicción avanza solo 1 % hacia él.</li>
+<li>Cada árbol tiene 3 niveles y ve el 90 % de las células; en cada pregunta solo escoge entre 101 TF al azar.</li>
+<li>Se detiene cuando deja de mejorar. NKG7: 482 árboles; en 60 genes al azar, de 25 a 481.</li>
+</ol>
+</div>
+<p class="callout" style="--i:2">Predicción final = promedio + <b>482 pequeñas correcciones del residuo</b>.</p>
+<aside>Minutos 29–31. Datos reales: el mismo modelo que corrió grn para NKG7 (semilla 2026), seguido célula por célula.
+Boosting = sumar muchos árboles débiles. Se parte del promedio. Desde ahí, cada árbol se entrena para predecir el residuo de cada célula, lo que todavía falta (real − predicción actual), y su respuesta se suma multiplicada por 0.01 (learning rate). Con error cuadrático, el residuo es justo la dirección en que más baja el error (el gradiente, de ahí "gradient boosting").
+Ejemplo: la célula NK tiene 38 UMI y parte de 11.0, residuo 27.0. Cada árbol cierra solo un poquito de ese hueco, el residuo se achica y la línea sube despacio.
+Célula NK con 38 UMI: 11.0 → 12.9 (10 árboles) → 23.9 (100) → 32.9 (482). Monocito con 0: 11.0 → 5.2 → 0.2.
+Error cuadrático medio de todas las células: 277 al inicio, 90 con 100 árboles, 19 al final.
+Azar a propósito: cada árbol se entrena con el 90 % de las células, y en cada pregunta solo puede escoger entre 101 de los 1,017 TF, sorteados de nuevo en cada pregunta. Así distintos TF tienen oportunidad; los primeros cinco árboles empezaron preguntando por IRF8, RUNX3, SPI1, TBX21, RORA.
+Parada temprana: con el 10 % de células que cada árbol no vio se mide si sigue mejorando; si en 25 árboles seguidos no mejora, se detiene. Por eso cada gen termina con un número distinto de árboles (máximo 5,000). CD79A: 374. En 60 genes al azar de la matriz: mediana 64, de 25 a 481; 15 de 60 se quedan en 25, el mínimo: el primer árbol ya no mejora nada, o sea que ningún TF predice ese gen. Marcadores: LYZ 390, MS4A1 416, GZMB 368.</aside>
+</section>

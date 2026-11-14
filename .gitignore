@@ -18,6 +18,9 @@
 !/figures/
 !/scripts/
 !/docs/
+# Material del instructor (este repo es para instructores; el repo de estudiantes se hará con squash sin esta carpeta)
+!/instructor/
+!/STATUS.md
 
 # data/: solo la matriz demo comprimida y los metadatos
 /data/*
